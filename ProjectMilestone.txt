@@ -1,0 +1,8 @@
+Project Milestone and Demo (Due: November 20 by 11:59 PM)
+Set up a web server that allows users to create accounts, register a Heart Track device, and view basic data collected from the device.
+Implement code for the IoT device that 
+Takes basic measurements for heart rate and blood oxygen saturation. 
+Minimally uses a fixed schedule of asking the user every 30 minutes to take a measurement.
+Submit a 5-minute video that demonstrates your IoT device asks the user to take a measurement, takes pulse and blood oxygen saturation measurements, transmits that data from the device to your web server, stores that data in the database, and has a front-end webpage for viewing that data.
+All code for the Project Milestone progress, including the device, server, front-end web pages, README, etc., must be submitted as a single archive to the D2L assignment.
+Submit on or before 11/20 by 11:59 pm for 3 points extra credit
