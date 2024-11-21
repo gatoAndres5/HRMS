@@ -44,6 +44,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+
+
 app.use('/users', usersRouter);
 app.use('/students', studentsRouter);
 app.use('/customers', customersRouter);
@@ -64,5 +66,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3020);
+app.listen(3030);
 module.exports = app;

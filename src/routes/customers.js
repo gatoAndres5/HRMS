@@ -18,31 +18,39 @@ const secret = fs.readFileSync(__dirname + '/../keys/jwtkey').toString();
 // see javascript/signup.js for ajax call
 // see Figure 9.3.5: Node.js project uses token-based authentication and password hashing with bcryptjs on zybooks
 
+// Signup route
 router.post("/signUp", function (req, res) {
-   Customer.findOne({ email: req.body.email }, function (err, customer) {
-       if (err) res.status(401).json({ success: false, err: err });
-       else if (customer) {
-           res.status(401).json({ success: false, msg: "This email already used" });
-       }
-       else {
-           const passwordHash = bcrypt.hashSync(req.body.password, 10);
-           const newCustomer = new Customer({
-               email: req.body.email,
-               passwordHash: passwordHash
-           });
+    const { email, password, role } = req.body;
 
-           newCustomer.save(function (err, customer) {
-               if (err) {
-                   res.status(400).json({ success: false, err: err });
-               }
-               else {
-                   let msgStr = `Customer (${req.body.email}) account has been created.`;
-                   res.status(201).json({ success: true, message: msgStr });
-                   console.log(msgStr);
-               }
-           });
-       }
-   });
+    // Ensure role is provided
+    if (!role) {
+        return res.status(400).json({ success: false, msg: "Role is required (Physician or Patient)." });
+    }
+
+    Customer.findOne({ email: email }, function (err, customer) {
+        if (err) {
+            res.status(500).json({ success: false, err: err });
+        } else if (customer) {
+            res.status(401).json({ success: false, msg: "This email is already used." });
+        } else {
+            const passwordHash = bcrypt.hashSync(password, 10);
+            const newCustomer = new Customer({
+                email: email,
+                passwordHash: passwordHash,
+                role: role
+            });
+
+            newCustomer.save(function (err, customer) {
+                if (err) {
+                    res.status(400).json({ success: false, err: err });
+                } else {
+                    const msgStr = `Customer (${email}) account has been created.`;
+                    res.status(201).json({ success: true, message: msgStr });
+                    console.log(msgStr);
+                }
+            });
+        }
+    });
 });
 
 // please fill in the blanks

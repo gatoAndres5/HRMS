@@ -3,6 +3,7 @@ const db = require("../db");
 const customerSchema = new db.Schema({
     email:      String,
     passwordHash:   String,
+    role: String,
     lastAccess:     { type: Date, default: Date.now },
  });
 

@@ -1,19 +1,48 @@
-// public/javasciprts/signup.js
+// public/javascripts/signup.js
+
+function isValidEmail(email) {
+    // Regex for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function isStrongPassword(password) {
+    // Regex for password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+}
 
 function signup() {
-    // data validation
-    if ($('#email').val() === "") {
-        window.alert("invalid email!");
+    const email = $('#email').val();
+    const password = $('#password').val();
+    const role = $('input[name="userRole"]:checked').val(); // Get selected role
+    // Role validation
+    if (!role) {
+        window.alert("Please select a role: Physician or Patient.");
         return;
     }
-    if ($('#password').val() === "") {
-        window.alert("invalid password");
+
+    // Email validation
+    if (!isValidEmail(email)) {
+        window.alert("Invalid email! Please provide a valid email address.");
         return;
     }
+
+    // Password validation
+    if (!isStrongPassword(password)) {
+        window.alert(
+            "Invalid password! Your password must be at least 8 characters long, " +
+            "and include an uppercase letter, a lowercase letter, a number, and a special character."
+        );
+        return;
+    }
+
     let txdata = {
-        email: $('#email').val(),
-        password: $('#password').val()
+        email: email,
+        password: password,
+        role: role
     };
+
     $.ajax({
         url: '/customers/signUp',
         method: 'POST',
@@ -24,8 +53,8 @@ function signup() {
     .done(function (data, textStatus, jqXHR) {
         $('#rxData').html(JSON.stringify(data, null, 2));
         if (data.success) {
-            // after 1 second, move to "login.html"
-            setTimeout(function(){
+            // After 1 second, move to "login.html"
+            setTimeout(function() {
                 window.location = "login.html";
             }, 1000);
         }
@@ -33,8 +62,9 @@ function signup() {
     .fail(function (jqXHR, textStatus, errorThrown) {
         if (jqXHR.status == 404) {
             $('#rxData').html("Server could not be reached!!!");    
+        } else {
+            $('#rxData').html(JSON.stringify(jqXHR, null, 2));
         }
-        else $('#rxData').html(JSON.stringify(jqXHR, null, 2));
     });
 }
 
