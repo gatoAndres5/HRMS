@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Authentication Example - Sign Up</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="javascripts/signupPhysician.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <a href="index.html" class="left brand-logo valign-wrapper">Home</a>
+      <a href="login.html" class="left brand-logo valign-wrapper">Log In</a>
+      <br/>
+      <h1>Physician Sign Up</h1>
+      <br/>
+      <div>
+        <!-- Email Input -->
+        <div class="form-group">
+          <label for="email">Email: </label>
+          <input type="text" id="email" class="form-control" placeholder="Enter email" name="email">
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+          <label for="password">Password: </label>
+          <input type="password" id="password" class="form-control" placeholder="Enter password" name="password">
+        </div>
+
+
+        <!-- Sign Up Button -->
+        <button id="btnSignUp" class="btn btn-primary">Sign Up</button>
+      </div>
+    </div>
+    
+    <!-- Message Output -->
+    <div style="display:inline-block; width:45vw; height: 60vh; margin: 2vh 20vw; ">
+      <label for="rxData">Message: </label>
+      <textarea id="rxData" class="form-control" style="width:100%; height:100%"></textarea>
+    </div>
+  </body>
+</html>

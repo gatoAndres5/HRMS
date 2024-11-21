@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Authentication Example - Sign Up</title>
+    <title>Patient Sign Up</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="javascripts/signup.js"></script>
+    <script src="javascripts/signupPatient.js"></script>
   </head>
   <body>
     <div class="container">
       <a href="index.html" class="left brand-logo valign-wrapper">Home</a>
       <a href="login.html" class="left brand-logo valign-wrapper">Log In</a>
       <br/>
-      <h1>Token-based User Authentication Example - Sign Up</h1>
+      <h1>Patient Sign Up</h1>
       <br/>
       <div>
         <!-- Email Input -->
@@ -26,19 +26,6 @@
         <div class="form-group">
           <label for="password">Password: </label>
           <input type="password" id="password" class="form-control" placeholder="Enter password" name="password">
-        </div>
-
-        <!-- Role Selection -->
-        <div class="form-group">
-          <label for="userRole">Select Role: </label>
-          <div>
-            <label class="radio-inline">
-              <input type="radio" name="userRole" id="physicianRole" value="physician"> Physician
-            </label>
-            <label class="radio-inline">
-              <input type="radio" name="userRole" id="patientRole" value="patient"> Patient
-            </label>
-          </div>
         </div>
 
         <!-- Sign Up Button -->

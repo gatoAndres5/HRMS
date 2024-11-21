@@ -15,12 +15,7 @@ function isStrongPassword(password) {
 function signup() {
     const email = $('#email').val();
     const password = $('#password').val();
-    const role = $('input[name="userRole"]:checked').val(); // Get selected role
-    // Role validation
-    if (!role) {
-        window.alert("Please select a role: Physician or Patient.");
-        return;
-    }
+    
 
     // Email validation
     if (!isValidEmail(email)) {
@@ -40,7 +35,7 @@ function signup() {
     let txdata = {
         email: email,
         password: password,
-        role: role
+        role: 'Patient'
     };
 
     $.ajax({
