@@ -1,5 +1,3 @@
-// public/javascripts/signup.js
-
 function isValidEmail(email) {
     // Regex for email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -12,10 +10,27 @@ function isStrongPassword(password) {
     return passwordRegex.test(password);
 }
 
+function collectDevices() {
+    const devices = [];
+    $(".device-entry").each(function () {
+        const deviceType = $(this).find(".deviceType").val().trim();
+        const deviceName = $(this).find(".deviceName").val().trim();
+
+        // Validate that both fields are provided
+        if (deviceType && deviceName) {
+            devices.push({
+                type: deviceType,
+                name: deviceName
+            });
+        }
+    });
+
+    return devices;
+}
+
 function signup() {
-    const email = $('#email').val();
-    const password = $('#password').val();
-    
+    const email = $('#email').val().trim();
+    const password = $('#password').val().trim();
 
     // Email validation
     if (!isValidEmail(email)) {
@@ -32,12 +47,25 @@ function signup() {
         return;
     }
 
-    let txdata = {
+    // Collect devices
+    const devices = collectDevices();
+    console.log(devices)
+
+    // Ensure at least one device is added
+    if (devices.length === 0) {
+        window.alert("Please add at least one device.");
+        return;
+    }
+
+    // Prepare data for the request
+    const txdata = {
         email: email,
         password: password,
-        role: 'Patient'
+        role: 'Patient',
+        devices: devices // Pass the array of devices
     };
 
+    // Make AJAX request
     $.ajax({
         url: '/customers/signUp',
         method: 'POST',
@@ -49,14 +77,14 @@ function signup() {
         $('#rxData').html(JSON.stringify(data, null, 2));
         if (data.success) {
             // After 1 second, move to "login.html"
-            setTimeout(function() {
+            setTimeout(function () {
                 window.location = "login.html";
-            }, 1000);
+            }, 10000);
         }
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status == 404) {
-            $('#rxData').html("Server could not be reached!!!");    
+        if (jqXHR.status === 404) {
+            $('#rxData').html("Server could not be reached!!!");
         } else {
             $('#rxData').html(JSON.stringify(jqXHR, null, 2));
         }
@@ -64,5 +92,25 @@ function signup() {
 }
 
 $(function () {
+    // Add new device input fields dynamically
+    $("#btnAddDevice").click(function () {
+        const deviceFields = `
+            <div class="device-entry">
+              <hr>
+              <div class="form-group">
+                <label for="deviceType">Device Type: </label>
+                <input type="text" class="form-control deviceType" placeholder="Enter device type (e.g., Argon)">
+              </div>
+              <div class="form-group">
+                <label for="deviceName">Device Name: </label>
+                <input type="text" class="form-control deviceName" placeholder="Enter device name (e.g., Living Room Monitor)">
+              </div>
+            </div>`;
+        $("#deviceList").append(deviceFields);
+    });
+
+    // Attach the signup handler
     $('#btnSignUp').click(signup);
 });
+
+

@@ -4,6 +4,7 @@ const customerSchema = new db.Schema({
     email:      String,
     passwordHash:   String,
     role: String,
+    devices: [{type: String, name: String}],
     lastAccess:     { type: Date, default: Date.now },
  });
 

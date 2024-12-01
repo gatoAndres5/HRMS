@@ -20,11 +20,15 @@ const secret = fs.readFileSync(__dirname + '/../keys/jwtkey').toString();
 
 // Signup route
 router.post("/signUp", function (req, res) {
-    const { email, password, role } = req.body;
+    console.log(req.body);  // Log to check incoming request body
 
-    // Ensure role is provided
+    const { email, password, role, devices } = req.body;
     if (!role) {
         return res.status(400).json({ success: false, msg: "Role is required (Physician or Patient)." });
+    }
+
+    if (!Array.isArray(devices) || devices.length === 0) {
+        return res.status(400).json({ success: false, msg: "Devices are required and should be an array." });
     }
 
     Customer.findOne({ email: email }, function (err, customer) {
@@ -37,7 +41,8 @@ router.post("/signUp", function (req, res) {
             const newCustomer = new Customer({
                 email: email,
                 passwordHash: passwordHash,
-                role: role
+                role: role,
+                devices: devices // Save devices as an array
             });
 
             newCustomer.save(function (err, customer) {
@@ -52,6 +57,9 @@ router.post("/signUp", function (req, res) {
         }
     });
 });
+
+
+
 
 // please fill in the blanks
 // see javascript/login.js for ajax call
