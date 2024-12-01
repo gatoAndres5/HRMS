@@ -156,6 +156,33 @@ router.put("/updatePassword", function (req, res) {
         });
     });
 });
+// Validate user's current password
+router.post("/validatePassword", function (req, res) {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ success: false, msg: "Missing email or password." });
+    }
+
+    Customer.findOne({ email: email }, function (err, customer) {
+        if (err) {
+            return res.status(500).json({ success: false, msg: "Database error." });
+        }
+
+        if (!customer) {
+            return res.status(404).json({ success: false, msg: "User not found." });
+        }
+
+        // Compare the provided password with the stored password hash
+        if (!bcrypt.compareSync(password, customer.passwordHash)) {
+            return res.status(401).json({ success: false, valid: false, msg: "Password is incorrect." });
+        }
+
+        // Password is valid
+        res.status(200).json({ success: true, valid: true, msg: "Password is valid." });
+    });
+});
+
 
 // Update user's devices
 router.put("/updateDevices", function (req, res) {
