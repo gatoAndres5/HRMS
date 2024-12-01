@@ -24,7 +24,7 @@ function collectDevices() {
             });
         }
     });
-
+    console.log("Devices collected:", devices);  // Check the structure here
     return devices;
 }
 
@@ -64,7 +64,7 @@ function signup() {
         role: 'Patient',
         devices: devices // Pass the array of devices
     };
-
+    console.log("Data being sent:", txdata);
     // Make AJAX request
     $.ajax({
         url: '/customers/signUp',

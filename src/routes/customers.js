@@ -124,5 +124,107 @@ router.get("/status", function (req, res) {
        res.status(401).json({ success: false, message: "Invalid JWT" });
    }
 });
+// Update user's password
+router.put("/updatePassword", function (req, res) {
+    const { email, currentPassword, newPassword } = req.body;
+
+    if (!email || !currentPassword || !newPassword) {
+        return res.status(400).json({ success: false, msg: "Missing email, current password, or new password." });
+    }
+
+    Customer.findOne({ email: email }, function (err, customer) {
+        if (err) {
+            return res.status(500).json({ success: false, msg: "Database error." });
+        }
+
+        if (!customer) {
+            return res.status(404).json({ success: false, msg: "User not found." });
+        }
+
+        if (!bcrypt.compareSync(currentPassword, customer.passwordHash)) {
+            return res.status(401).json({ success: false, msg: "Current password is incorrect." });
+        }
+
+        // Update password hash
+        customer.passwordHash = bcrypt.hashSync(newPassword, 10);
+        customer.save(function (err) {
+            if (err) {
+                return res.status(500).json({ success: false, msg: "Error saving new password." });
+            }
+
+            res.status(200).json({ success: true, msg: "Password updated successfully." });
+        });
+    });
+});
+
+// Update user's devices
+router.put("/updateDevices", function (req, res) {
+    const { email, devices } = req.body;
+
+    if (!email || !Array.isArray(devices)) {
+        return res.status(400).json({ success: false, msg: "Email and devices array are required." });
+    }
+
+    Customer.findOne({ email: email }, function (err, customer) {
+        if (err) {
+            return res.status(500).json({ success: false, msg: "Database error." });
+        }
+
+        if (!customer) {
+            return res.status(404).json({ success: false, msg: "User not found." });
+        }
+
+        // Update devices
+        customer.devices = devices;
+        customer.save(function (err) {
+            if (err) {
+                return res.status(500).json({ success: false, msg: "Error updating devices." });
+            }
+
+            res.status(200).json({ success: true, msg: "Devices updated successfully." });
+        });
+    });
+});
+// Get user's devices
+router.get("/getDevices", function (req, res) {
+    const email = req.query.email;
+
+    if (!email) {
+        return res.status(400).json({ success: false, msg: "Email is required." });
+    }
+
+    Customer.findOne({ email: email }, "devices", function (err, customer) {
+        if (err) {
+            return res.status(500).json({ success: false, msg: "Database error." });
+        }
+
+        if (!customer) {
+            return res.status(404).json({ success: false, msg: "User not found." });
+        }
+
+        res.status(200).json({ success: true, devices: customer.devices });
+    });
+});
+// Get user's email
+router.get("/getUserEmail", function (req, res) {
+    // Check if the X-Auth header is set
+    if (!req.headers["x-auth"]) {
+        return res.status(401).json({ success: false, msg: "Missing X-Auth header" });
+    }
+
+    // X-Auth should contain the JWT token
+    const token = req.headers["x-auth"];
+    try {
+        const decoded = jwt.decode(token, secret); // Decode the JWT token
+
+        // Send back the user's email
+        res.status(200).json({ success: true, email: decoded.email });
+    }
+    catch (ex) {
+        res.status(401).json({ success: false, message: "Invalid JWT" });
+    }
+});
+
+
 
 module.exports = router;

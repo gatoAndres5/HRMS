@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Edit Patient</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="javascripts/editPatient.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <a href="index.html" class="left brand-logo valign-wrapper">Home</a>
+      <a href="login.html" class="left brand-logo valign-wrapper">Log In</a>
+      <h1>Edit Patient Dashboard</h1>
+
+      <!-- Password Change Section -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Change Password</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label for="currentPassword">Current Password:</label>
+            <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password">
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
+          </div>
+          <button id="btnChangePassword" class="btn btn-warning">Change Password</button>
+        </div>
+      </div>
+
+      <!-- Registered Devices Section -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Registered Devices</h3>
+        </div>
+        <div class="panel-body">
+          <ul id="deviceList" class="list-group">
+            <!-- Devices will be dynamically added here -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Add New Device Section -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Register a New Device</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label for="newDeviceType">Device Type:</label>
+            <input type="text" id="newDeviceType" class="form-control" placeholder="Enter device type (e.g., Argon)">
+          </div>
+          <div class="form-group">
+            <label for="newDeviceName">Device Name:</label>
+            <input type="text" id="newDeviceName" class="form-control" placeholder="Enter device name (e.g., Living Room Monitor)">
+          </div>
+          <button id="btnAddNewDevice" class="btn btn-secondary">Add Device</button>
+        </div>
+      </div>
+
+      <!-- Feedback Message -->
+      <div id="messageBox" class="alert alert-info" style="display: none;"></div>
+    </div>
+  </body>
+</html>
