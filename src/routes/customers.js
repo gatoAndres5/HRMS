@@ -22,12 +22,12 @@ const secret = fs.readFileSync(__dirname + '/../keys/jwtkey').toString();
 router.post("/signUp", function (req, res) {
     console.log(req.body);  // Log to check incoming request body
 
-    const { email, password, role, devices } = req.body;
+    const { email, password, role, devices, name, physicians } = req.body;
     if (!role) {
         return res.status(400).json({ success: false, msg: "Role is required (Physician or Patient)." });
     }
 
-    if (!Array.isArray(devices) || devices.length === 0) {
+    if ((!Array.isArray(devices) || devices.length === 0) && (role=='Patient')) {
         return res.status(400).json({ success: false, msg: "Devices are required and should be an array." });
     }
 
@@ -38,12 +38,24 @@ router.post("/signUp", function (req, res) {
             res.status(401).json({ success: false, msg: "This email is already used." });
         } else {
             const passwordHash = bcrypt.hashSync(password, 10);
-            const newCustomer = new Customer({
-                email: email,
-                passwordHash: passwordHash,
-                role: role,
-                devices: devices // Save devices as an array
-            });
+            if(role == 'Patient'){
+                newCustomer = new Customer({
+                    email: email,
+                    passwordHash: passwordHash,
+                    role: role,
+                    devices: devices, // Save devices as an array
+                    physicians: physicians   
+                });
+            }
+            else{
+                newCustomer = new Customer({
+                    email: email,
+                    passwordHash: passwordHash,
+                    role: role,
+                    devices: devices, // Save devices as an array
+                    name: name,   
+                });
+            }
 
             newCustomer.save(function (err, customer) {
                 if (err) {
@@ -87,8 +99,13 @@ router.post("/logIn", function (req, res) {
                customer.save((err, customer) => {
                    console.log("User's LastAccess has been update.");
                });
-               // Send back a token that contains the user's username
-               res.status(201).json({ success: true, token: token, msg: "Login success" });
+               // Send back the token and role
+               res.status(201).json({
+                success: true,
+                token: token,
+                role: customer.role, // Include the role
+                msg: "Login success"
+            });
            }
            else {
                res.status(401).json({ success: false, msg: "Email or password invalid." });
@@ -127,8 +144,9 @@ router.get("/status", function (req, res) {
 // Update user's password
 router.put("/updatePassword", function (req, res) {
     const { email, currentPassword, newPassword } = req.body;
+    console.log("Request Data:", req.body);
 
-    if (!email || !currentPassword || !newPassword) {
+    if (!email ||  !currentPassword || !newPassword) {
         return res.status(400).json({ success: false, msg: "Missing email, current password, or new password." });
     }
 
