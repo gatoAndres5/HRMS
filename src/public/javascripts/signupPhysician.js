@@ -15,6 +15,7 @@ function isStrongPassword(password) {
 function signup() {
     const email = $('#email').val();
     const password = $('#password').val();
+    const name = $('#name').val();
     
 
     // Email validation
@@ -35,7 +36,8 @@ function signup() {
     let txdata = {
         email: email,
         password: password,
-        role: 'Physician'
+        role: 'Physician',
+        name: name
     };
 
     $.ajax({
