@@ -11,8 +11,6 @@ const fs = require('fs');
 
 const secret = fs.readFileSync(__dirname + '/../keys/jwtkey').toString();
 
-// example of authentication
-// register a new customer
 
 // please fiil in the blanks
 // see javascript/signup.js for ajax call
@@ -269,6 +267,167 @@ router.get("/getUserEmail", function (req, res) {
         res.status(401).json({ success: false, message: "Invalid JWT" });
     }
 });
+
+// Endpoint to fetch physicians from the database
+router.get("/getPhysicians", function (req, res) {
+    // Check if the X-Auth header is set
+    if (!req.headers["x-auth"]) {
+        return res.status(401).json({ success: false, msg: "Missing X-Auth header" });
+    }
+
+    // X-Auth should contain the JWT token
+    const token = req.headers["x-auth"];
+    try {
+        // Decode the JWT token without verifying
+        const decoded = jwt.decode(token, secret);  // Decode the token
+
+        // Log the decoded token for debugging
+        console.log("Decoded token:", decoded);
+
+        const userEmail = decoded.email;
+        console.log("User Email:", userEmail);  // Should be printed
+
+        // Fetch the user's role from the database using the decoded email
+        Customer.findOne({ email: userEmail }, 'role', function (err, user) {
+            if (err) {
+                console.error("Database query error:", err.message);
+                return res.status(500).json({ success: false, msg: "Database error" });
+            }
+
+            if (!user) {
+                return res.status(404).json({ success: false, msg: "User not found" });
+            }
+
+            const userRole = user.role;
+            console.log("User Role:", userRole);  // Should be printed
+
+            // Role-based logic: only authenticated users with valid roles can fetch physicians
+            if (userRole !== 'Patient' && userRole !== 'Physician') {
+                return res.status(403).json({ success: false, msg: "Access denied" });
+            }
+
+            // Fetch physicians from the database
+            Customer.find({ role: 'Physician' })
+                .select('name email devices')  // Select only relevant fields
+                .exec(function (err, physicians) {
+                    if (err) {
+                        console.error("Database query error:", err.message);
+                        return res.status(500).json({ success: false, msg: "Database error" });
+                    }
+
+                    if (!physicians || physicians.length === 0) {
+                        return res.status(404).json({ success: false, msg: "No physicians found" });
+                    }
+
+                    // Send physicians data in the response
+                    res.status(200).json({ success: true, physicians });
+                });
+        });
+    } catch (ex) {
+        console.error("Error decoding JWT:", ex.message);
+        res.status(401).json({ success: false, message: "Invalid JWT" });
+    }
+});
+// Endpoint to assign a physician to a patient
+router.put("/assignPhysician", function (req, res) {
+    const { email, physicianName } = req.body; // We're using physicianName instead of physicianEmail
+
+    // Check if both email and physicianName are provided
+    if (!email || !physicianName) {
+        console.error("Missing email or physicianName. Request body:", req.body);
+        return res.status(400).json({ success: false, msg: "Email and physician name are required." });
+    }
+
+    console.log(`Attempting to find patient with email: ${email}`);
+
+    // Find the patient by email
+    Customer.findOne({ email: email, role: 'Patient' }, function (err, patient) {
+        if (err) {
+            console.error("Database error while finding patient:", err.message);
+            return res.status(500).json({ success: false, msg: "Database error" });
+        }
+
+        if (!patient) {
+            console.log(`Patient with email ${email} not found.`);
+            return res.status(404).json({ success: false, msg: "Patient not found" });
+        }
+
+        console.log(`Found patient with email: ${patient.email}`);
+
+        // Find the physician by name (instead of email)
+        console.log(`Attempting to find physician with name: ${physicianName}`);
+
+        Customer.findOne({ name: physicianName, role: 'Physician' }, function (err, physician) {
+            if (err) {
+                console.error("Database error while finding physician:", err.message);
+                return res.status(500).json({ success: false, msg: "Database error" });
+            }
+
+            if (!physician) {
+                console.log(`Physician with name ${physicianName} not found.`);
+                return res.status(404).json({ success: false, msg: "Physician not found" });
+            }
+
+            console.log(`Found physician with name: ${physician.name}, email: ${physician.email}`);
+
+            // Assign the physician's email to the patient's physicians field
+            patient.physicians = physician.name; // Store the physician's email in the physicians field
+
+            console.log(`Assigning physician with email ${physician.email} to patient with email ${patient.email}`);
+
+            // Save the updated patient record
+            patient.save(function (err) {
+                if (err) {
+                    console.error("Error saving patient record:", err.message);
+                    return res.status(500).json({ success: false, msg: "Error saving patient record" });
+                }
+
+                console.log(`Successfully assigned physician to patient. Patient email: ${patient.email}, Physician email: ${physician.email}`);
+
+                // Send success response
+                res.status(200).json({ success: true, msg: "Physician assigned successfully" });
+            });
+        });
+    });
+});
+// Endpoint to fetch the assigned physician for a patient
+router.get("/getAssignedPhysician", function (req, res) {
+    const patientEmail = req.query.email; // Get email from the query parameter
+
+    // Check if the email is provided
+    if (!patientEmail) {
+        return res.status(400).json({ success: false, msg: "Email is required" });
+    }
+
+    // Fetch the patient's assigned physician from the database using the email
+    Customer.findOne({ email: patientEmail }, 'physicians', function (err, patient) {
+        if (err) {
+            console.error("Database query error:", err.message);
+            return res.status(500).json({ success: false, msg: "Database error" });
+        }
+
+        if (!patient) {
+            return res.status(404).json({ success: false, msg: "Patient not found" });
+        }
+
+        const assignedPhysician = patient.physicians; // Access the physicians field
+        console.log("Assigned Physician:", assignedPhysician);  // Log the assigned physician
+
+        if (!assignedPhysician) {
+            return res.status(404).json({ success: false, msg: "No assigned physician found" });
+        }
+
+        // Send assigned physician data in the response
+        res.status(200).json({ success: true, physician: assignedPhysician });
+    });
+});
+
+
+
+
+
+
+
 
 
 
