@@ -6,6 +6,7 @@ function isStrongPassword(password) {
 $(document).ready(function () {
     let patientEmail = '';
     let devices = [];
+    let assignedPhysician = ''; // Store the assigned physician's name
 
     // Fetch the logged-in patient's email dynamically
     function fetchPatientEmail() {
@@ -19,6 +20,7 @@ $(document).ready(function () {
                 console.log(response);  // Process response
                 patientEmail = response.email; // Assign the fetched email to patientEmail
                 loadDevices();  // Now that email is set, load devices
+                loadAssignedPhysician(); // Load the assigned physician
             },
             error: function (error) {
                 console.log(error);  // Handle error
@@ -200,6 +202,93 @@ $(document).ready(function () {
             }
         });
     }
+    // Load the assigned physician for the patient
+    function loadAssignedPhysician() {
+        $.ajax({
+            url: '/customers/getAssignedPhysician', // Endpoint to fetch the assigned physician
+            type: 'GET',
+            headers: {
+                'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
+            },
+            data: { email: patientEmail }, // Pass email to fetch assigned physician
+            success: function (response) {
+                assignedPhysician = response.physician || ''; // Set the assigned physician
+                loadPhysicians(); // Now load the physician list
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+    }
+ // Load physicians from the server
+ function loadPhysicians() {
+    $.ajax({
+        url: '/customers/getPhysicians', // Ensure this is the correct endpoint to get the physicians
+        type: 'GET',
+        headers: {
+            'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
+        },
+        success: function (response) {
+            const physicians = response.physicians || [];
+            renderPhysicians(physicians);
+        },
+        error: function (error) {
+            updateMessage('Failed to load physicians.');
+            console.error(error);
+        }
+    });
+}
+
+// Render the physician list
+function renderPhysicians(physicians) {
+    $('#physicianList').empty();
+    physicians.forEach((physician) => {
+        const checked = physician.name === assignedPhysician ? 'checked' : ''; // Check the assigned physician
+        $('#physicianList').append(`
+            <li class="list-group-item">
+                <input type="radio" name="physician" value="${physician.name}" id="physician_${physician.email}" ${checked}>
+                <label for="physician_${physician.email}">${physician.name}</label>
+            </li>
+        `);
+    });
+
+    // Show the assign button if physicians are available
+    if (physicians.length > 0) {
+        $('#btnAssignPhysician').show();
+    } else {
+        $('#btnAssignPhysician').hide();
+    }
+}
+
+// Assign the selected physician to the patient
+$('#btnAssignPhysician').click(function () {
+    const selectedPhysicianName = $('input[name="physician"]:checked').val(); // Get the selected physician's name
+    if (!selectedPhysicianName) {
+        updateMessage('Please select a physician.');
+        return;
+    }
+    console.log("Selected Physician Name:", selectedPhysicianName);
+
+    $.ajax({
+        url: '/customers/assignPhysician',
+        type: 'PUT',
+        contentType: 'application/json',
+        headers: {
+            'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
+        },
+        data: JSON.stringify({
+            email: patientEmail, // Make sure `patientEmail` is set correctly
+            physicianName: selectedPhysicianName // Send physician's name instead of email or id
+        }),
+        success: function (response) {
+            updateMessage(response.msg); // Assuming `response.msg` holds a success message
+        },
+        error: function (error) {
+            updateMessage(error.responseJSON?.msg || 'An error occurred while assigning the physician.');
+        }
+    });
+});
+
 
     // Initialize by fetching the patient email
     fetchPatientEmail();
