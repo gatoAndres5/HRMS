@@ -9,9 +9,27 @@
     <script src="javascripts/editPhysician.js"></script>
   </head>
   <body>
+    <div id="dashboard"></div> <!-- Container where dashboard will be loaded -->
+
+    <script>
+      // Load the dashboard dynamically
+      fetch('dashboard.html')
+        .then(response => response.text())
+        .then(html => {
+          // Insert the HTML content
+          document.getElementById('dashboard').innerHTML = html;
+
+          // Dynamically load the dashboard.js script
+          const script = document.createElement('script');
+          script.src = 'javascripts/dashboard.js';
+          script.onload = function () {
+            console.log('dashboard.js script loaded');
+          };
+          document.body.appendChild(script);  // Append the script to the body
+        })
+        .catch(error => console.error('Error loading dashboard:', error));
+    </script>
     <div class="container">
-      <a href="index.html" class="left brand-logo valign-wrapper">Home</a>
-      <a href="login.html" class="left brand-logo valign-wrapper">Log Out</a>
       <h1>Edit Physician Portal</h1>
 
       <!-- Password Change Section -->
