@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="javascripts/signupPatient.js"></script>
   </head>
   <body>
     <div class="container">
-      <a href="index.html" class="left brand-logo valign-wrapper">Home</a>
-      <a href="login.html" class="left brand-logo valign-wrapper">Log In</a>
+      <a href="index.html" class="brand-logo valign-wrapper">Home</a>
+      <a href="login.html" class="brand-logo valign-wrapper">Log In</a>
       <br />
       <h1>Patient Sign Up</h1>
       <br />
@@ -27,6 +28,10 @@
           <label for="password">Password: </label>
           <input type="password" id="password" class="form-control" placeholder="Enter password" name="password">
         </div>
+        <div class="form-group">
+          <label for="name">Name: </label>
+          <input type="text" id="name" class="form-control" placeholder="Enter name" name="name">
+        </div>
 
         <!-- Device Registration -->
         <h3>Register a Device</h3>
@@ -40,6 +45,7 @@
               <label for="deviceName">Device Name: </label>
               <input type="text" class="form-control deviceName" placeholder="Enter device name (e.g., Living Room Monitor)">
             </div>
+            
           </div>
         </div>
         <button id="btnAddDevice" class="btn btn-secondary">Add Another Device</button>

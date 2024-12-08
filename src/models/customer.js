@@ -12,13 +12,17 @@ const customerSchema = new mongoose.Schema({
         }
     ],
     lastAccess: { type: Date, default: Date.now },
-    // Attributes specific to Physicians
-    name: { type: String, required: function () { return this.role === 'Physician'; } },
+    name: { type: String},
     
     // Attributes specific to Patients
     physicians: {
         type: String, required: function () { return this.role === 'Patient'; }
     },
+    // Attributes specific to Patients
+    patients: [{
+        type: String, required: function () { return this.role === 'Physician'; }
+    }
+    ]
 });
 
  const Customer = db.model("Customer", customerSchema);

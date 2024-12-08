@@ -15,7 +15,7 @@ fetch('/customers/status', {
   const userRole = data.role; // Getting the role from the response
 
   // Display the email in the top right corner
-  document.getElementById('userEmail').textContent = userEmail;
+  document.getElementById('userName').textContent = "Logged In as: " + data.name;
 
   // Set the correct links based on the role
   if (userRole === 'Patient') {
@@ -31,7 +31,16 @@ fetch('/customers/status', {
 .catch(error => {
   console.error('Error fetching user data:', error); // Catch any errors in the API call
 });
-
+// Event listener for the Log Out link
+document.getElementById('logoutLink').addEventListener('click', function(event) {
+    // Remove the token from localStorage when the user clicks Log Out
+    localStorage.removeItem('token');
+    
+    // Optionally, redirect the user to the login page
+    window.location.href = 'index.html'; // Redirect to the login page (or any other page)
+    
+    console.log('User logged out');
+  });
 // Event listener for handling link clicks (event delegation)
 document.addEventListener('click', function(event) {
   if (event.target && event.target.id === 'homeLink') {

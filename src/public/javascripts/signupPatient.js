@@ -31,6 +31,7 @@ function collectDevices() {
 function signup() {
     const email = $('#email').val().trim();
     const password = $('#password').val().trim();
+    const name = $('#name').val();
 
     // Email validation
     if (!isValidEmail(email)) {
@@ -63,7 +64,8 @@ function signup() {
         password: password,
         role: 'Patient',
         devices: devices, // Pass the array of devices
-        physicians: "None"
+        physicians: "None",
+        name: name
     };
     console.log("Data being sent:", txdata);
     // Make AJAX request

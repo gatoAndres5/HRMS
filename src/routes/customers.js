@@ -42,7 +42,8 @@ router.post("/signUp", function (req, res) {
                     passwordHash: passwordHash,
                     role: role,
                     devices: devices, // Save devices as an array
-                    physicians: physicians   
+                    physicians: physicians,
+                    name: name   
                 });
             }
             else{
@@ -126,7 +127,7 @@ router.get("/status", function (req, res) {
     try {
         const decoded = jwt.decode(token, secret);
         // Find the user by email and include role, email, and lastAccess
-        Customer.findOne({ email: decoded.email }, "email role lastAccess", function (err, user) {
+        Customer.findOne({ email: decoded.email }, "email role name patients lastAccess", function (err, user) {
             if (err) {
                 res.status(400).json({ success: false, message: "Error contacting DB. Please contact support." });
             } else if (user) {
@@ -331,15 +332,15 @@ router.get("/getPhysicians", function (req, res) {
 });
 // Endpoint to assign a physician to a patient
 router.put("/assignPhysician", function (req, res) {
-    const { email, physicianName } = req.body; // We're using physicianName instead of physicianEmail
+    const { email, physicianName } = req.body; // Extracting patient email and physician name from request body
 
-    // Check if both email and physicianName are provided
+    // Validate input
     if (!email || !physicianName) {
         console.error("Missing email or physicianName. Request body:", req.body);
         return res.status(400).json({ success: false, msg: "Email and physician name are required." });
     }
 
-    console.log(`Attempting to find patient with email: ${email}`);
+    console.log(`Looking for patient with email: ${email}`);
 
     // Find the patient by email
     Customer.findOne({ email: email, role: 'Patient' }, function (err, patient) {
@@ -349,48 +350,90 @@ router.put("/assignPhysician", function (req, res) {
         }
 
         if (!patient) {
-            console.log(`Patient with email ${email} not found.`);
+            console.log(`No patient found with email: ${email}`);
             return res.status(404).json({ success: false, msg: "Patient not found" });
         }
 
-        console.log(`Found patient with email: ${patient.email}`);
+        console.log(`Patient found: ${patient.name} (Email: ${patient.email})`);
 
-        // Find the physician by name (instead of email)
-        console.log(`Attempting to find physician with name: ${physicianName}`);
+        // If the patient already has an assigned physician, find the current physician
+        const currentPhysicianName = patient.physicians;
 
-        Customer.findOne({ name: physicianName, role: 'Physician' }, function (err, physician) {
+        // Find the new physician by name
+        console.log(`Looking for new physician with name: ${physicianName}`);
+        Customer.findOne({ name: physicianName, role: 'Physician' }, function (err, newPhysician) {
             if (err) {
-                console.error("Database error while finding physician:", err.message);
+                console.error("Database error while finding new physician:", err.message);
                 return res.status(500).json({ success: false, msg: "Database error" });
             }
 
-            if (!physician) {
-                console.log(`Physician with name ${physicianName} not found.`);
-                return res.status(404).json({ success: false, msg: "Physician not found" });
+            if (!newPhysician) {
+                console.log(`No physician found with name: ${physicianName}`);
+                return res.status(404).json({ success: false, msg: "New physician not found" });
             }
 
-            console.log(`Found physician with name: ${physician.name}, email: ${physician.email}`);
+            console.log(`New physician found: ${newPhysician.name} (Email: ${newPhysician.email})`);
 
-            // Assign the physician's email to the patient's physicians field
-            patient.physicians = physician.name; // Store the physician's email in the physicians field
+            // Remove the patient from the current physician's patients array if applicable
+            if (currentPhysicianName) {
+                console.log(`Looking for current physician with name: ${currentPhysicianName}`);
+                Customer.findOne({ name: currentPhysicianName, role: 'Physician' }, function (err, currentPhysician) {
+                    if (err) {
+                        console.error("Database error while finding current physician:", err.message);
+                        return res.status(500).json({ success: false, msg: "Database error" });
+                    }
 
-            console.log(`Assigning physician with email ${physician.email} to patient with email ${patient.email}`);
+                    if (currentPhysician) {
+                        console.log(`Current physician found: ${currentPhysician.name} (Email: ${currentPhysician.email})`);
+                        // Remove the patient from the current physician's patients array
+                        currentPhysician.patients = currentPhysician.patients.filter(p => p !== patient.name);
 
-            // Save the updated patient record
-            patient.save(function (err) {
-                if (err) {
-                    console.error("Error saving patient record:", err.message);
-                    return res.status(500).json({ success: false, msg: "Error saving patient record" });
-                }
+                        console.log(`Removing patient ${patient.name} from current physician ${currentPhysician.name}`);
 
-                console.log(`Successfully assigned physician to patient. Patient email: ${patient.email}, Physician email: ${physician.email}`);
+                        // Save the updated current physician record
+                        currentPhysician.save(err => {
+                            if (err) {
+                                console.error("Error saving current physician record:", err.message);
+                                return res.status(500).json({ success: false, msg: "Error saving current physician record" });
+                            }
+                        });
+                    }
+                });
+            }
 
-                // Send success response
-                res.status(200).json({ success: true, msg: "Physician assigned successfully" });
-            });
+            // Assign the new physician to the patient
+            patient.physicians = newPhysician.name;
+
+            // Add the patient to the new physician's patients array (if not already present)
+            if (!newPhysician.patients.includes(patient.name)) {
+                newPhysician.patients.push(patient.name);
+            }
+
+            console.log(`Assigning new physician ${newPhysician.name} to patient ${patient.name}`);
+            console.log(`Adding patient ${patient.name} to new physician ${newPhysician.name}`);
+
+            // Save both updated records
+            Promise.all([
+                patient.save(),
+                newPhysician.save()
+            ])
+                .then(() => {
+                    console.log(`Successfully updated both patient and new physician records.`);
+                    res.status(200).json({
+                        success: true,
+                        msg: `Patient ${patient.name} assigned to new physician ${newPhysician.name} successfully.`,
+                    });
+                })
+                .catch(err => {
+                    console.error("Error saving records:", err.message);
+                    res.status(500).json({ success: false, msg: "Error saving records" });
+                });
         });
     });
 });
+
+
+
 // Endpoint to fetch the assigned physician for a patient
 router.get("/getAssignedPhysician", function (req, res) {
     const patientEmail = req.query.email; // Get email from the query parameter

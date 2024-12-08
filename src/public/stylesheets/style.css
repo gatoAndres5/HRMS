@@ -6,3 +6,31 @@ body {
 a {
   color: #00B7FF;
 }
+.container a {
+  display: inline-block;
+  padding: 10px 20px; /* Adds padding to make the links look like buttons */
+  background-color: #007BFF; /* Button background color */
+  color: white; /* Text color */
+  border-radius: 5px; /* Round corners of the button */
+  text-decoration: none; /* Remove underline */
+  text-align: center; /* Center the text inside the button */
+  margin-right: 15px; /* Space between the buttons */
+  transition: background-color 0.3s ease; /* Smooth background color change */
+}
+
+/* Hover effect for buttons */
+.container a:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Align the 'Logged In as' section to the right corner */
+.right-align {
+  float: right;
+  font-size: 16px;
+  padding-right: 20px;
+}
+
+/* Apply margin to the entire container */
+.container {
+  margin-top: 20px; /* Adds space between the container and the top of the page */
+}
