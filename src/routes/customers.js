@@ -117,28 +117,29 @@ router.post("/logIn", function (req, res) {
 // see Figure 9.3.5: Node.js project uses token-based authentication and password hashing with bcryptjs on zybooks
 
 router.get("/status", function (req, res) {
-   // See if the X-Auth header is set
-   if (!req.headers["x-auth"]) {
-       return res.status(401).json({ success: false, msg: "Missing X-Auth header" });
-   }
-   // X-Auth should contain the token 
-   const token = req.headers["x-auth"];
-   try {
-       const decoded = jwt.decode(token, secret);
-       // Send back email and last access
-       Customer.find({ email: decoded.email }, "email lastAccess", function (err, users) {
-           if (err) {
-               res.status(400).json({ success: false, message: "Error contacting DB. Please contact support." });
-           }
-           else {
-               res.status(200).json(users);
-           }
-       });
-   }
-   catch (ex) {
-       res.status(401).json({ success: false, message: "Invalid JWT" });
-   }
-});
+    // See if the X-Auth header is set
+    if (!req.headers["x-auth"]) {
+        return res.status(401).json({ success: false, msg: "Missing X-Auth header" });
+    }
+    // X-Auth should contain the token 
+    const token = req.headers["x-auth"];
+    try {
+        const decoded = jwt.decode(token, secret);
+        // Find the user by email and include role, email, and lastAccess
+        Customer.findOne({ email: decoded.email }, "email role lastAccess", function (err, user) {
+            if (err) {
+                res.status(400).json({ success: false, message: "Error contacting DB. Please contact support." });
+            } else if (user) {
+                res.status(200).json(user); // Return user data including role
+            } else {
+                res.status(404).json({ success: false, message: "User not found" });
+            }
+        });
+    } catch (ex) {
+        res.status(401).json({ success: false, message: "Invalid JWT" });
+    }
+ });
+ 
 // Update user's password
 router.put("/updatePassword", function (req, res) {
     const { email, currentPassword, newPassword } = req.body;

@@ -63,7 +63,7 @@ function signup() {
         password: password,
         role: 'Patient',
         devices: devices, // Pass the array of devices
-        physicians: 'Dr. Hart'
+        physicians: "None"
     };
     console.log("Data being sent:", txdata);
     // Make AJAX request
