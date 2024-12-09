@@ -1,4 +1,5 @@
 let userEmail = null;
+
 // Function to convert 24-hour time to 12-hour format with AM/PM
 function convertTo12HourFormat(time24) {
     const [hour, minute] = time24.split(":").map(Number);
@@ -6,10 +7,11 @@ function convertTo12HourFormat(time24) {
     const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
     return `${hour12}:${minute.toString().padStart(2, "0")} ${period}`;
 }
-// Function to fetch updated data and refresh the UI
-function refreshMeasurementData() {
+
+// Function to fetch updated data and refresh the UI based on patient name
+function refreshMeasurementData(patientName) {
     $.ajax({
-        url: '/customers/status', // Fetch the updated data
+        url: '/customers/patient?patient=' + encodeURIComponent(patientName), // Include the patient query parameter in the URL
         method: 'GET',
         headers: { 'x-auth': window.localStorage.getItem("token") },
         dataType: 'json'
@@ -18,6 +20,8 @@ function refreshMeasurementData() {
         // Update the UI with the refreshed data
         console.log('Refreshed data:', data);
         userEmail = data.email;
+        //document.getElementById('dashboardTitle').textContent = `${data.name}'s Patient Dashboard`;
+        document.getElementById('patientTitle').textContent = `${data.name}'s Patient Dashboard`;
         document.getElementById("currentStartTime").textContent = convertTo12HourFormat(data.measurements.startTime);
         document.getElementById("currentEndTime").textContent = convertTo12HourFormat(data.measurements.endTime);
         document.getElementById("currentFrequency").textContent = data.measurements.frequency;
@@ -27,8 +31,15 @@ function refreshMeasurementData() {
         alert('Could not refresh data. Please try again later.');
     });
 }
+
 $(function () {
-    refreshMeasurementData();
+    const urlParams = new URLSearchParams(window.location.search);
+    const patientName = urlParams.get('patient');  // Get 'patient' query parameter
+    console.log("Patient Name from query:", patientName);
+
+    // Fetch and display the user data based on patient name
+    refreshMeasurementData(patientName);
+
     $('#measurementForm').submit(function (event) {
         event.preventDefault(); // Prevent default form submission
 
@@ -36,7 +47,7 @@ $(function () {
         let txdata = {
             timeRangeStart: $('#timeRangeStart').val(), // Get value from start time input
             timeRangeEnd: $('#timeRangeEnd').val(),     // Get value from end time input
-            frequency: $('#frequency').val(),          // Get value from frequency input
+            frequency: $('#frequency').val(),           // Get value from frequency input
             user: userEmail
         };
 
@@ -53,7 +64,7 @@ $(function () {
             // Handle the success response
             console.log('Data updated:', response);
             // Fetch the updated data and refresh the UI
-            refreshMeasurementData();
+            refreshMeasurementData(patientName);
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             // Handle failure
@@ -62,7 +73,7 @@ $(function () {
         });
     });
 
-    // Populate Weekly Summary Data
+    // Populate Weekly Summary Data (mock data for now)
     const weeklyData = {
         averageHeartRate: 75,
         minHeartRate: 60,
@@ -73,7 +84,7 @@ $(function () {
     $("#minHeartRate").text(weeklyData.minHeartRate);
     $("#maxHeartRate").text(weeklyData.maxHeartRate);
 
-    // Data for Detailed Daily View
+    // Data for Detailed Daily View (mock data for now)
     const dailyData = {
         "2024-12-01": {
             heartRate: [65, 70, 72, 68, 75, 80, 85],
@@ -115,8 +126,6 @@ $(function () {
             console.warn("No data found for the selected day:", selectedDay);
         }
     });
-
-    // Chart update function
     let heartRateChartInstance = null;
 let oxygenChartInstance = null;
 
@@ -246,8 +255,4 @@ function updateChart(canvasId, label, data, labels, borderColor, backgroundColor
         console.error("Error creating the chart:", error);
     }
 }
-
-
 });
-
-
