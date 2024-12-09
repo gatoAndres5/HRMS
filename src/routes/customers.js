@@ -43,7 +43,12 @@ router.post("/signUp", function (req, res) {
                     role: role,
                     devices: devices, // Save devices as an array
                     physicians: physicians,
-                    name: name   
+                    name: name,
+                    measurements: {
+                        startTime: "06:00",
+                        endTime: "22:00",
+                        measfrequency: 30
+                    }   
                 });
             }
             else{
@@ -127,7 +132,7 @@ router.get("/status", function (req, res) {
     try {
         const decoded = jwt.decode(token, secret);
         // Find the user by email and include role, email, and lastAccess
-        Customer.findOne({ email: decoded.email }, "email role name patients lastAccess", function (err, user) {
+        Customer.findOne({ email: decoded.email }, "email role name patients measurements lastAccess", function (err, user) {
             if (err) {
                 res.status(400).json({ success: false, message: "Error contacting DB. Please contact support." });
             } else if (user) {
@@ -465,6 +470,56 @@ router.get("/getAssignedPhysician", function (req, res) {
         res.status(200).json({ success: true, physician: assignedPhysician });
     });
 });
+router.post("/submitMeasurement", function (req, res) {
+    const { timeRangeStart, timeRangeEnd, frequency, user } = req.body;  // Extract form data from the request body
+
+    // Validate that all required fields are provided
+    if (!timeRangeStart || !timeRangeEnd || !frequency) {
+        return res.status(400).json({ success: false, msg: "All fields (timeRangeStart, timeRangeEnd, frequency) are required" });
+    }
+
+    // The user submitting the form is the one whose data is being updated
+    //const user = req.user;  // Assuming the user object is available (e.g., from JWT authentication middleware)
+    
+    // Log the user object to inspect its contents
+    console.log("User object: ", user);
+
+    if (!user) {
+        return res.status(401).json({ success: false, msg: "Unauthorized" });
+    }
+
+    // Find the customer in the database by their unique identifier (e.g., email or ID)
+    Customer.findOne({ email: user }, function (err, customer) {
+        if (err) {
+            console.error("Database query error:", err.message);
+            return res.status(500).json({ success: false, msg: "Database error" });
+        }
+
+        if (!customer) {
+            return res.status(404).json({ success: false, msg: "Customer not found" });
+        }
+
+        // Update the customer's measurement preferences
+        customer.measurements = {
+            startTime: timeRangeStart,
+            endTime: timeRangeEnd,
+            frequency: frequency
+        };
+
+        // Save the updated customer data
+        customer.save(function (saveErr) {
+            if (saveErr) {
+                console.error("Error saving data:", saveErr.message);
+                return res.status(500).json({ success: false, msg: "Failed to save data" });
+            }
+
+            // Respond with success
+            res.status(200).json({ success: true, msg: "Measurement data successfully updated" });
+        });
+    });
+});
+
+
 
 
 

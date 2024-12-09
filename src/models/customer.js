@@ -22,7 +22,13 @@ const customerSchema = new mongoose.Schema({
     patients: [{
         type: String, required: function () { return this.role === 'Physician'; }
     }
-    ]
+    ],
+    // Only Patients will have a single measurement object
+    measurements: {
+        startTime: { type: String },
+        endTime: { type: String },
+        frequency: { type: Number }
+    }
 });
 
  const Customer = db.model("Customer", customerSchema);

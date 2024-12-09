@@ -1,14 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Authentication Example - Account</title>
+    <title>Patient Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.0/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="javascripts/account.js"></script>
   </head>
   <body>
+    <script>
+      // Check authentication
+      (function () {
+        if (!window.localStorage.getItem("token")) {
+          window.location.replace("display.html");
+        }
+      })();
+    </script>
+
     <div id="dashboard"></div> <!-- Container where dashboard will be loaded -->
 
     <script>
@@ -25,28 +36,74 @@
           script.onload = function () {
             console.log('dashboard.js script loaded');
           };
-          document.body.appendChild(script);  // Append the script to the body
+          document.body.appendChild(script); // Append the script to the body
         })
         .catch(error => console.error('Error loading dashboard:', error));
     </script>
+
     <div class="container">
-      <br/>
-      <h1>Token-based User authenticiation example - Account</h1>
-      <br/>
-      <div>
-        <button id="btnLogOut">LogOut</button>
+      <br />
+      <h1>Patient Dashboard</h1>
+      <br />
+      <h3>Current Measurement Time Range and Frequency</h3>
+      <p>Start Time: <span id="currentStartTime">--:--</span></p>
+      <p>End Time: <span id="currentEndTime">--:--</span></p>
+      <p>Frequency: <span id="currentFrequency">--</span> minutes</p>
+      <br />
+
+      <!-- Form for selecting time range and frequency -->
+      <h3>Set Measurement Time Range and Frequency</h3>
+      <form id="measurementForm">
+        <div class="form-group">
+          <label for="timeRangeStart">Start Time:</label>
+          <input type="time" class="form-control" id="timeRangeStart" required>
+        </div>
+        <div class="form-group">
+          <label for="timeRangeEnd">End Time:</label>
+          <input type="time" class="form-control" id="timeRangeEnd" required>
+        </div>
+        <div class="form-group">
+          <label for="frequency">Frequency (minutes):</label>
+          <input type="number" class="form-control" id="frequency" required min="1">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <br />
+
+      <!-- Tabs for Weekly Summary and Detailed Daily View -->
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#weeklySummary">Weekly Summary</a></li>
+        <li><a data-toggle="tab" href="#detailedDaily">Detailed Daily View</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Weekly Summary Tab -->
+        <div id="weeklySummary" class="tab-pane fade in active">
+          <h3>Weekly Summary</h3>
+          <p>Average Heart Rate: <span id="avgHeartRate">--</span> bpm</p>
+          <p>Minimum Heart Rate: <span id="minHeartRate">--</span> bpm</p>
+          <p>Maximum Heart Rate: <span id="maxHeartRate">--</span> bpm</p>
+        </div>
+
+        <!-- Detailed Daily View Tab -->
+        <div id="detailedDaily" class="tab-pane fade">
+          <h3>Detailed Daily View</h3>
+          <label for="daySelector">Select Day:</label>
+          <select id="daySelector" class="form-control">
+            <option value="2024-12-01">2024-12-01</option>
+            <option value="2024-12-02">2024-12-02</option>
+            <option value="2024-12-03">2024-12-03</option>
+            <option value="2024-12-04">2024-12-04</option>
+          </select>
+          <br />
+          <canvas id="heartRateChart" width="400" height="200"></canvas>
+          <br />
+          <canvas id="oxygenChart" width="400" height="200"></canvas>
+        </div>
       </div>
     </div>
-    <div style="display:inline-block; width:45vw; height: 60vh; margin: 2vh 20vw; ">
-      <label for="rxData">Message: </label>
-      <textarea id="rxData" style="width:100%; height:100%"></textarea>
-    </div>
-    <script>
-      (function () {
-        if (!window.localStorage.getItem("token")) {
-          window.location.replace("display.html");
-        }
-      })();
-    </script>
+
+    <!-- Add Bootstrap JavaScript here -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </body>
 </html>
