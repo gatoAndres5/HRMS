@@ -47,7 +47,7 @@ router.post("/signUp", function (req, res) {
                     measurements: {
                         startTime: "06:00",
                         endTime: "22:00",
-                        measfrequency: 30
+                        frequency: 30
                     }   
                 });
             }

@@ -7,8 +7,8 @@ const customerSchema = new mongoose.Schema({
     role: { type: String, enum: ['Patient', 'Physician'], required: true },
     devices: [
         {
-            type: { type: String },
-            name: { type: String }
+            id: { type: String },
+            accessToken: { type: String }
         }
     ],
     lastAccess: { type: Date, default: Date.now },

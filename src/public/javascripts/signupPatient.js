@@ -13,14 +13,14 @@ function isStrongPassword(password) {
 function collectDevices() {
     const devices = [];
     $(".device-entry").each(function () {
-        const deviceType = $(this).find(".deviceType").val().trim();
-        const deviceName = $(this).find(".deviceName").val().trim();
+        const deviceId = $(this).find(".deviceId").val().trim();
+        const deviceAT = $(this).find(".deviceAT").val().trim();
 
         // Validate that both fields are provided
-        if (deviceType && deviceName) {
+        if (deviceId && deviceAT) {
             devices.push({
-                type: deviceType,
-                name: deviceName
+                id: deviceId,
+                accessToken: deviceAT
             });
         }
     });
@@ -101,12 +101,12 @@ $(function () {
             <div class="device-entry">
               <hr>
               <div class="form-group">
-                <label for="deviceType">Device Type: </label>
-                <input type="text" class="form-control deviceType" placeholder="Enter device type (e.g., Argon)">
+                <label for="deviceId">Device Id: </label>
+                <input type="text" class="form-control deviceId" placeholder="Enter device id">
               </div>
               <div class="form-group">
-                <label for="deviceName">Device Name: </label>
-                <input type="text" class="form-control deviceName" placeholder="Enter device name (e.g., Living Room Monitor)">
+                <label for="deviceAT">Device Access Token: </label>
+                <input type="text" class="form-control deviceAT" placeholder="Enter device access token">
               </div>
             </div>`;
         $("#deviceList").append(deviceFields);
