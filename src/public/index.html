@@ -2,45 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <!--Import Google Icon Font-->
+    <!-- Import Google Icon Font -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--Import materialize.css-->
-    <!-- Compiled and minified CSS -->
+    <!-- Import Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="stylesheets/site.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ECE 413/513</title>
+    <style>
+        /* For smaller screens, reduce font size */
+        @media (max-width: 600px) {
+            #logo-container {
+                font-size: 16px;
+                white-space: normal;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="nav-wrapper bg-az-blue lighten-4" role="navigation">
-        <div class="nav-wrapper container">
-            <a id="logo-container" href="index.html" class="left brand-logo valign-wrapper" style="word-spacing: 10px;">Home Heart Rate Monitoring System (HRMS)</a>
+        <div class="container">
+            <a id="logo-container" href="index.html" class="left brand-logo valign-wrapper" style="word-spacing: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Home Heart Rate Monitoring System (HRMS)</a>
         </div>
     </nav>
+
+    <!-- Main Content -->
     <div class="container">
         <div class="section">
             <div class="row">
-                <div class="col s12">
+                <!-- Use grid to make this section responsive -->
+                <div class="col s12 m6 l4">
                     <div class="card-panel">
                         <h4 class="blue-text text-darken-4">Welcome to the HRMS</h4>
                         <div class="collection">
                             <a href="signupPhysician.html" class="collection-item">Physician Sign-up</a>
                             <a href="signupPatient.html" class="collection-item">Patient Sign-up</a>
-                            <a href="login.html" class="collection-item">Log-in </a>
+                            <a href="login.html" class="collection-item">Log-in</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
     <footer class="page-footer bg-az-red darken-2">
-        <div class="footer-copyright">
-            <div class="container">
-                &copy; 2024
-                <span class="grey-text text-lighten-4 right">Electrical and Computer Engineering, University of Arizona</a>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6 l6">
+                    &copy; 2024
+                </div>
+                <div class="col s12 m6 l6 right-align">
+                    <span class="grey-text text-lighten-4">Electrical and Computer Engineering, University of Arizona</span>
+                </div>
             </div>
         </div>
     </footer>
 </body>
-</html> 
+</html>
