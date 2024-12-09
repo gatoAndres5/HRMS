@@ -145,7 +145,45 @@ router.get("/status", function (req, res) {
         res.status(401).json({ success: false, message: "Invalid JWT" });
     }
  });
- 
+// New router to get patient information by patient name
+router.get("/patient", function (req, res) {
+    // Check if the X-Auth header is present
+    if (!req.headers["x-auth"]) {
+        return res.status(401).json({ success: false, msg: "Missing X-Auth header" });
+    }
+
+    // X-Auth should contain the token 
+    const token = req.headers["x-auth"];
+    
+    try {
+        const decoded = jwt.decode(token, secret);
+        const patientName = req.query.patient;  // Get the patient name from the query parameter
+        console.log("patientName: ", patientName);
+        
+        if (!patientName) {
+            return res.status(400).json({ success: false, msg: "Missing patient name in query parameter" });
+        }
+        
+        // Find the customer by email and directly search for the patient by name
+        Customer.findOne({ "name": patientName }, "email role name patients measurements lastAccess", function (err, user) {
+            if (err) {
+                return res.status(400).json({ success: false, message: "Error contacting DB. Please contact support." });
+            } else if (user) {
+                // Since patients is now just an array of names, you can return the data directly.
+                console.log("user found: ", user);
+                const patientData = user.patients.includes(patientName) ? patientName : null;
+                res.status(200).json({ email: user.email, measurements: user.measurements, name: user.name });
+               
+            } else {
+                res.status(404).json({ success: false, message: "User not found" });
+            }
+        });
+    } catch (ex) {
+        res.status(401).json({ success: false, message: "Invalid JWT" });
+    }
+});
+
+
 // Update user's password
 router.put("/updatePassword", function (req, res) {
     const { email, currentPassword, newPassword } = req.body;
