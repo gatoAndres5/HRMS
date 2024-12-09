@@ -28,7 +28,18 @@ const customerSchema = new mongoose.Schema({
         startTime: { type: String },
         endTime: { type: String },
         frequency: { type: Number }
+    },
+    sensorReadings: [{
+        heartRate: {
+            date: {type: String},
+            bpm: {type: Number}
+        },
+        oxygenSaturation: {
+            date: {type: String},
+            o2: {type: Number}
+        }
     }
+    ]
 });
 
  const Customer = db.model("Customer", customerSchema);
