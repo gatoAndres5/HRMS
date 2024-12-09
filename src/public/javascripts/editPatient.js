@@ -56,7 +56,7 @@ $(document).ready(function () {
         devices.forEach((device, index) => {
             $('#deviceList').append(`
                 <li>
-                    ${device.type} - ${device.name}
+                    Device Id: ${device.id} - Access Token: ${device.accessToken}
                     <button class="removeDeviceBtn" data-index="${index}">Remove</button>
                 </li>
             `);
@@ -70,21 +70,21 @@ $(document).ready(function () {
 
     // Clear new device fields
     function clearNewDeviceFields() {
-        $('#newDeviceType').val('');
-        $('#newDeviceName').val('');
+        $('#newDeviceId').val('');
+        $('#newDeviceAT').val('');
     }
 
     // Add new device
     $('#btnAddNewDevice').click(function () {
-        const type = $('#newDeviceType').val().trim();
-        const name = $('#newDeviceName').val().trim();
+        const id = $('#newDeviceId').val().trim();
+        const accessToken = $('#newDeviceAT').val().trim();
 
-        if (!type || !name) {
-            updateMessage("Both type and name are required for a new device.");
+        if (!id || !accessToken) {
+            updateMessage("Both id and acccess token are required for a new device.");
             return;
         }
 
-        const newDevices = [...devices, { type, name }];
+        const newDevices = [...devices, { id, accessToken }];
 
         $.ajax({
             url: '/customers/updateDevices',
@@ -95,7 +95,7 @@ $(document).ready(function () {
                 devices: newDevices
             }),
             success: function (response) {
-                devices.push({ type, name });
+                devices.push({ id, accessToken });
                 renderDevices();
                 clearNewDeviceFields();
                 updateMessage(response.msg);
