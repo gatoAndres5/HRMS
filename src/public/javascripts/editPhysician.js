@@ -9,7 +9,7 @@ $(document).ready(function () {
     // Fetch the logged-in patient's email dynamically
     function fetchPhysicianEmail() {
         $.ajax({
-            url: '/customers/getUserEmail',
+            url: '/users/getUserEmail',
             type: 'GET',
             headers: {
                 'x-auth': localStorage.getItem('token')
@@ -51,7 +51,7 @@ $(document).ready(function () {
         }
     
         $.ajax({
-            url: '/customers/validatePassword', // Endpoint for validating the current password
+            url: '/users/validatePassword', // Endpoint for validating the current password
             type: 'POST',
             headers: {
                 'x-auth': localStorage.getItem('token')
@@ -82,7 +82,7 @@ $(document).ready(function () {
     // Function to update the password
     function updatePassword(newPassword, currentPassword) {
         $.ajax({
-            url: '/customers/updatePassword',
+            url: '/users/updatePassword',
             type: 'PUT',
             headers: {
                 'x-auth': localStorage.getItem('token')

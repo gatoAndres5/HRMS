@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="javascripts/editPatient.js"></script>
   </head>
   <body>
+    <!-- Navigation Section (Dashboard) -->
     <div id="dashboard"></div> <!-- Container where dashboard will be loaded -->
 
     <script>
@@ -16,7 +18,6 @@
       fetch('dashboard.html')
         .then(response => response.text())
         .then(html => {
-          // Insert the HTML contentn
           document.getElementById('dashboard').innerHTML = html;
 
           // Dynamically load the dashboard.js script
@@ -25,17 +26,19 @@
           script.onload = function () {
             console.log('dashboard.js script loaded');
           };
-          document.body.appendChild(script);  // Append the script to the body
+          document.body.appendChild(script);
         })
         .catch(error => console.error('Error loading dashboard:', error));
     </script>
+
+    <!-- Main Content -->
     <div class="container">
-      
-      <h1>Edit Patient Portal</h1>
+      <h1 class="text-center">Edit Patient Portal</h1>
+
+      <!-- Feedback Message Section -->
+      <div id="messageBox" class="alert alert-info" style="display: none;"></div>
 
       <!-- Password Change Section -->
-       <!-- Feedback Message -->
-      <div id="messageBox" class="alert alert-info" style="display: none;"></div>
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3>Change Password</h3>
@@ -49,7 +52,7 @@
             <label for="newPassword">New Password:</label>
             <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
           </div>
-          <button id="btnChangePassword" class="btn btn-warning">Change Password</button>
+          <button id="btnChangePassword" class="btn btn-warning btn-block">Change Password</button>
         </div>
       </div>
 
@@ -72,30 +75,29 @@
         </div>
         <div class="panel-body">
           <div class="form-group">
-            <label for="newDeviceId">Device Id:</label>
-            <input type="text" id="newDeviceId" class="form-control" placeholder="Enter device id">
+            <label for="newDeviceId">Device ID:</label>
+            <input type="text" id="newDeviceId" class="form-control" placeholder="Enter device ID">
           </div>
           <div class="form-group">
             <label for="newDeviceAT">Device Access Token:</label>
             <input type="text" id="newDeviceAT" class="form-control" placeholder="Enter device access token">
           </div>
-          <button id="btnAddNewDevice" class="btn btn-secondary">Add Device</button>
+          <button id="btnAddNewDevice" class="btn btn-secondary btn-block">Add Device</button>
         </div>
       </div>
-      <!-- Select Physician Section -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3>Select Physician</h3>
-      </div>
-    <div class="panel-body">
-      <ul id="physicianList" class="list-group">
-      <!-- Physicians will be dynamically added here -->
-    </ul>
-    <button id="btnAssignPhysician" class="btn btn-primary" style="display: none;">Assign Selected Physician</button>
-  </div>
-</div>
 
-      
+      <!-- Select Physician Section -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Select Physician</h3>
+        </div>
+        <div class="panel-body">
+          <ul id="physicianList" class="list-group">
+            <!-- Physicians will be dynamically added here -->
+          </ul>
+          <button id="btnAssignPhysician" class="btn btn-primary btn-block" style="display: none;">Assign Selected Physician</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

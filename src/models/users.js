@@ -1,7 +1,7 @@
 const db = require("../db");
 const mongoose = require('mongoose');
 
-const customerSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['Patient', 'Physician'], required: true },
@@ -42,6 +42,6 @@ const customerSchema = new mongoose.Schema({
     ]
 });
 
- const Customer = db.model("Customer", customerSchema);
+ const user = db.model("Users", userSchema);
 
-module.exports = Customer;
+module.exports = user;

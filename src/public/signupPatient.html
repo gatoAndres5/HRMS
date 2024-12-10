@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
   <head>
     <title>Patient Sign Up</title>
@@ -17,6 +17,9 @@
       <h1>Patient Sign Up</h1>
       <br />
       <div>
+        <!-- Error Message Section -->
+        <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+
         <!-- Email Input -->
         <div class="form-group">
           <label for="email">Email: </label>
@@ -28,6 +31,7 @@
           <label for="password">Password: </label>
           <input type="password" id="password" class="form-control" placeholder="Enter password" name="password">
         </div>
+
         <div class="form-group">
           <label for="name">Name: </label>
           <input type="text" id="name" class="form-control" placeholder="Enter name" name="name">
@@ -45,7 +49,6 @@
               <label for="deviceAT">Device Access Token: </label>
               <input type="text" class="form-control deviceAT" placeholder="Enter device access token">
             </div>
-            
           </div>
         </div>
         <button id="btnAddDevice" class="btn btn-secondary">Add Another Device</button>
@@ -55,13 +58,5 @@
         <button id="btnSignUp" class="btn btn-primary">Sign Up</button>
       </div>
     </div>
-
-    <!-- Message Output -->
-    <div style="display:inline-block; width:45vw; height: 60vh; margin: 2vh 20vw;">
-      <label for="rxData">Message: </label>
-      <textarea id="rxData" class="form-control" style="width:100%; height:100%"></textarea>
-    </div>
   </body>
 </html>
-
-

@@ -11,7 +11,7 @@ function convertTo12HourFormat(time24) {
 // Function to fetch updated data and refresh the UI based on patient name
 function refreshMeasurementData(patientName) {
     $.ajax({
-        url: '/customers/patient?patient=' + encodeURIComponent(patientName), // Include the patient query parameter in the URL
+        url: '/users/patient?patient=' + encodeURIComponent(patientName), // Include the patient query parameter in the URL
         method: 'GET',
         headers: { 'x-auth': window.localStorage.getItem("token") },
         dataType: 'json'
@@ -53,7 +53,7 @@ $(function () {
 
         // Send the data to the backend
         $.ajax({
-            url: '/customers/submitMeasurement', // Backend route
+            url: '/users/submitMeasurement', // Backend route
             method: 'POST',
             contentType: 'application/json',
             headers: { 'x-auth': window.localStorage.getItem("token") }, // Send the token for authentication

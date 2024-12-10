@@ -1,11 +1,21 @@
-// public/javasciprts/login.js
 function login() {
+    let email = $('#email').val().trim();
+    let password = $('#password').val().trim();
+
+    // Validate fields
+    if (!email || !password) {
+        let msg = !email ? "Email is required." : "Password is required.";
+        showError(msg);
+        return;
+    }
+
     let txdata = {
-        email: $('#email').val(),
-        password: $('#password').val()
+        email: email,
+        password: password
     };
+
     $.ajax({
-        url: '/customers/logIn',
+        url: '/users/logIn',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(txdata),
@@ -13,22 +23,24 @@ function login() {
     })
     .done(function (data, textStatus, jqXHR) {
         localStorage.setItem("token", data.token);
-        // Log the server response
-        console.log(data);
-        
+        console.log(data); // Log the server response
+
         if (data.role === "Patient") {
-            window.location.replace("account.html");
+            window.location.replace("patientAccount.html");
         } else if (data.role === "Physician") {
             window.location.replace("physicianAccount.html");
         } else {
-            window.location.replace("account.html"); // Fallback page
+            window.location.replace("patientAccount.html"); // Fallback page
         }
-        
     })
-    
     .fail(function (jqXHR, textStatus, errorThrown) {
-        $('#rxData').html(JSON.stringify(jqXHR, null, 2));
+        let errorMsg = jqXHR.responseJSON ? jqXHR.responseJSON.error || "Login failed. Please try again." : "An unexpected error occurred.";
+        showError(errorMsg);
     });
+}
+
+function showError(message) {
+    $('#errorMsg').text(message).show();
 }
 
 $(function () {

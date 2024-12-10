@@ -17,6 +17,8 @@
       <h1>Physician Sign Up</h1>
       <br/>
       <div>
+        <!-- Error Message Output -->
+        <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
         <!-- Email Input -->
         <div class="form-group">
           <label for="email">Email: </label>
@@ -33,16 +35,11 @@
           <input type="text" id="name" class="form-control" placeholder="Enter name" name="name">
         </div>
 
-
         <!-- Sign Up Button -->
         <button id="btnSignUp" class="btn btn-primary">Sign Up</button>
       </div>
     </div>
     
-    <!-- Message Output -->
-    <div style="display:inline-block; width:45vw; height: 60vh; margin: 2vh 20vw; ">
-      <label for="rxData">Message: </label>
-      <textarea id="rxData" class="form-control" style="width:100%; height:100%"></textarea>
-    </div>
+    
   </body>
 </html>

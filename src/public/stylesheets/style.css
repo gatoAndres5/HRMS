@@ -6,6 +6,7 @@ body {
 a {
   color: #00B7FF;
 }
+
 .container a {
   display: inline-block;
   padding: 10px 20px; /* Adds padding to make the links look like buttons */
@@ -33,4 +34,54 @@ a {
 /* Apply margin to the entire container */
 .container {
   margin-top: 20px; /* Adds space between the container and the top of the page */
+}
+
+/* For smaller screens, reduce font size and allow wrapping */
+@media (max-width: 600px) {
+  #logo-container {
+    font-size: 14px;
+    white-space: normal; /* Allow wrapping */
+    word-wrap: break-word;
+    text-align: center;
+  }
+}
+
+/* For medium screens and up, adjust the font size */
+@media (max-width: 992px) {
+  #logo-container {
+    font-size: 18px;
+  }
+}
+
+/* Navbar style to center the title */
+.nav-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#logo-container {
+  display: block;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  margin-top: -20px;
+}
+
+/* Centering the content */
+.main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;  /* Full height of the viewport */
+}
+
+.card-panel {
+  text-align: center;
+  padding: 30px;
 }
