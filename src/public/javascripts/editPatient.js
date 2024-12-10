@@ -11,7 +11,7 @@ $(document).ready(function () {
     // Fetch the logged-in patient's email dynamically
     function fetchPatientEmail() {
         $.ajax({
-            url: '/customers/getUserEmail',
+            url: '/users/getUserEmail',
             type: 'GET',
             headers: {
                 'x-auth': localStorage.getItem('token')
@@ -36,7 +36,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: '/customers/getDevices', // Endpoint for fetching devices
+            url: '/users/getDevices', // Endpoint for fetching devices
             type: 'GET',
             data: { email: patientEmail }, // Pass email to server if necessary
             success: function (response) {
@@ -56,7 +56,7 @@ $(document).ready(function () {
         devices.forEach((device, index) => {
             $('#deviceList').append(`
                 <li>
-                    Device Id: ${device.id} - Access Token: ${device.accessToken}
+                    Device Id: ${device.id} - Access Token: jm${device.accessToken}
                     <button class="removeDeviceBtn" data-index="${index}">Remove</button>
                 </li>
             `);
@@ -87,7 +87,7 @@ $(document).ready(function () {
         const newDevices = [...devices, { id, accessToken }];
 
         $.ajax({
-            url: '/customers/updateDevices',
+            url: '/users/updateDevices',
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({
@@ -112,7 +112,7 @@ $(document).ready(function () {
         devices.splice(index, 1);
 
         $.ajax({
-            url: '/customers/updateDevices',
+            url: '/users/updateDevices',
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({
@@ -149,7 +149,7 @@ $(document).ready(function () {
         }
     
         $.ajax({
-            url: '/customers/validatePassword', // Endpoint for validating the current password
+            url: '/users/validatePassword', // Endpoint for validating the current password
             type: 'POST',
             headers: {
                 'x-auth': localStorage.getItem('token')
@@ -181,7 +181,7 @@ $(document).ready(function () {
     // Function to update the password
     function updatePassword(newPassword, currentPassword) {
         $.ajax({
-            url: '/customers/updatePassword',
+            url: '/users/updatePassword',
             type: 'PUT',
             headers: {
                 'x-auth': localStorage.getItem('token')
@@ -205,7 +205,7 @@ $(document).ready(function () {
     // Load the assigned physician for the patient
     function loadAssignedPhysician() {
         $.ajax({
-            url: '/customers/getAssignedPhysician', // Endpoint to fetch the assigned physician
+            url: '/users/getAssignedPhysician', // Endpoint to fetch the assigned physician
             type: 'GET',
             headers: {
                 'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
@@ -223,7 +223,7 @@ $(document).ready(function () {
  // Load physicians from the server
  function loadPhysicians() {
     $.ajax({
-        url: '/customers/getPhysicians', // Ensure this is the correct endpoint to get the physicians
+        url: '/users/getPhysicians', // Ensure this is the correct endpoint to get the physicians
         type: 'GET',
         headers: {
             'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
@@ -270,7 +270,7 @@ $('#btnAssignPhysician').click(function () {
     console.log("Selected Physician Name:", selectedPhysicianName);
 
     $.ajax({
-        url: '/customers/assignPhysician',
+        url: '/users/assignPhysician',
         type: 'PUT',
         contentType: 'application/json',
         headers: {

@@ -2,7 +2,7 @@ $(function () {
 
     // Fetch the logged-in user's details
     $.ajax({
-        url: '/customers/status', // Endpoint to fetch physician details
+        url: '/users/status', // Endpoint to fetch physician details
         method: 'GET',
         headers: { 'x-auth': window.localStorage.getItem("token") },
         dataType: 'json'

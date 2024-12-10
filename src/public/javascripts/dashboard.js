@@ -1,7 +1,7 @@
 console.log('Dashboard script is loaded');
 
 // Fetch the logged-in user's email and role using the API
-fetch('/customers/status', {
+fetch('/users/status', {
   method: 'GET',
   headers: {
     'x-auth': localStorage.getItem('token') // Retrieve the token from localStorage
@@ -19,7 +19,7 @@ fetch('/customers/status', {
 
   // Set the correct links based on the role
   if (userRole === 'Patient') {
-    document.getElementById('homeLink').href = 'account.html'; // Patient home page
+    document.getElementById('homeLink').href = 'patientAccount.html'; // Patient home page
     document.getElementById('editProfileLink').href = 'editPatient.html'; // Edit patient profile
   } else if (userRole === 'Physician') {
     document.getElementById('homeLink').href = 'physicianAccount.html'; // Physician home page

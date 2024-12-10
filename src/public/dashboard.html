@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Authentication Example - Account</title>
+    <title>User Dashboard</title>
 
     <!-- Link to external style.css file -->
     <link rel="stylesheet" href="stylesheets/style.css">
@@ -13,12 +13,18 @@
   </head>
   <body>
     <div class="container">
-        <a id="homeLink" class="brand-logo valign-wrapper">Home</a>
-        <a id="editProfileLink" class="brand-logo valign-wrapper">Edit Profile</a>
-        <a id="logoutLink" href="index.html" class="brand-logo valign-wrapper">Log Out</a>
-    
-        <!-- Placeholder for the email in the top right corner -->
-        <div id="userName" class="right-align" style="font-size: 16px;"></div>
+        <!-- Navigation links -->
+        <div class="row">
+          <div class="col-xs-12 col-sm-8">
+            <a id="homeLink" href="home.html" class="brand-logo">Home</a>
+            <a id="editProfileLink" href="editProfile.html" class="brand-logo">Edit Profile</a>
+            <a id="logoutLink" href="index.html" class="brand-logo">Log Out</a>
+          </div>
+          <div class="col-xs-12 col-sm-4 text-right">
+            <!-- Placeholder for the email -->
+            <div id="userName" style="font-size: 16px;"></div>
+          </div>
+        </div>
     </div>
 
     <!-- Link to the external script -->

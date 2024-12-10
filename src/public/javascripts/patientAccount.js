@@ -9,7 +9,7 @@ function convertTo12HourFormat(time24) {
 // Function to fetch updated data and refresh the UI
 function refreshMeasurementData() {
     $.ajax({
-        url: '/customers/status', // Fetch the updated data
+        url: '/users/status', // Fetch the updated data
         method: 'GET',
         headers: { 'x-auth': window.localStorage.getItem("token") },
         dataType: 'json'
@@ -42,7 +42,7 @@ $(function () {
 
         // Send the data to the backend
         $.ajax({
-            url: '/customers/submitMeasurement', // Backend route
+            url: '/users/submitMeasurement', // Backend route
             method: 'POST',
             contentType: 'application/json',
             headers: { 'x-auth': window.localStorage.getItem("token") }, // Send the token for authentication

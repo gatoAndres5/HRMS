@@ -5,14 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.0/dist/chartjs-plugin-annotation.min.js"></script>
     <script src="javascripts/viewPatientInfo.js"></script>
   </head>
   <body>
+    <!-- Authentication Check -->
     <script>
-      // Check authentication
       (function () {
         if (!window.localStorage.getItem("token")) {
           window.location.replace("display.html");
@@ -20,14 +21,14 @@
       })();
     </script>
 
-    <div id="dashboard"></div> <!-- Container where dashboard will be loaded -->
+    <!-- Navigation Section -->
+    <div id="dashboard"></div>
 
     <script>
       // Load the dashboard dynamically
       fetch('dashboard.html')
         .then(response => response.text())
         .then(html => {
-          // Insert the HTML content
           document.getElementById('dashboard').innerHTML = html;
 
           // Dynamically load the dashboard.js script
@@ -36,42 +37,53 @@
           script.onload = function () {
             console.log('dashboard.js script loaded');
           };
-          document.body.appendChild(script); // Append the script to the body
+          document.body.appendChild(script);
         })
         .catch(error => console.error('Error loading dashboard:', error));
     </script>
 
+    <!-- Main Content -->
     <div class="container">
-      <br />
-      <h1 id="patientTitle">Patient Dashboard</h1>
-      <br />
-      <h3>Current Measurement Time Range and Frequency</h3>
-      <p>Start Time: <span id="currentStartTime">--:--</span></p>
-      <p>End Time: <span id="currentEndTime">--:--</span></p>
-      <p>Frequency: <span id="currentFrequency">--</span> minutes</p>
-      <br />
+      <h1 id="patientTitle" class="text-center mt-4">Patient Dashboard</h1>
 
-      <!-- Form for selecting time range and frequency -->
-      <h3>Set Measurement Time Range and Frequency</h3>
-      <form id="measurementForm">
-        <div class="form-group">
-          <label for="timeRangeStart">Start Time:</label>
-          <input type="time" class="form-control" id="timeRangeStart" required>
+      <!-- Current Measurement Time Range -->
+      <div class="panel panel-default mt-4">
+        <div class="panel-heading">
+          <h3>Current Measurement Time Range and Frequency</h3>
         </div>
-        <div class="form-group">
-          <label for="timeRangeEnd">End Time:</label>
-          <input type="time" class="form-control" id="timeRangeEnd" required>
+        <div class="panel-body">
+          <p>Start Time: <span id="currentStartTime">--:--</span></p>
+          <p>End Time: <span id="currentEndTime">--:--</span></p>
+          <p>Frequency: <span id="currentFrequency">--</span> minutes</p>
         </div>
-        <div class="form-group">
-          <label for="frequency">Frequency (minutes):</label>
-          <input type="number" class="form-control" id="frequency" required min="1">
+      </div>
+
+      <!-- Form for Setting Time Range and Frequency -->
+      <div class="panel panel-default mt-4">
+        <div class="panel-heading">
+          <h3>Set Measurement Time Range and Frequency</h3>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-      <br />
+        <div class="panel-body">
+          <form id="measurementForm">
+            <div class="form-group">
+              <label for="timeRangeStart">Start Time:</label>
+              <input type="time" class="form-control" id="timeRangeStart" required>
+            </div>
+            <div class="form-group">
+              <label for="timeRangeEnd">End Time:</label>
+              <input type="time" class="form-control" id="timeRangeEnd" required>
+            </div>
+            <div class="form-group">
+              <label for="frequency">Frequency (minutes):</label>
+              <input type="number" class="form-control" id="frequency" required min="1">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
 
       <!-- Tabs for Weekly Summary and Detailed Daily View -->
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs mt-4">
         <li class="active"><a data-toggle="tab" href="#weeklySummary">Weekly Summary</a></li>
         <li><a data-toggle="tab" href="#detailedDaily">Detailed Daily View</a></li>
       </ul>
@@ -96,14 +108,14 @@
             <option value="2024-12-04">2024-12-04</option>
           </select>
           <br />
-          <canvas id="heartRateChart" width="400" height="200"></canvas>
+          <canvas id="heartRateChart" class="mt-3" width="400" height="200"></canvas>
           <br />
-          <canvas id="oxygenChart" width="400" height="200"></canvas>
+          <canvas id="oxygenChart" class="mt-3" width="400" height="200"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Add Bootstrap JavaScript here -->
+    <!-- Add Bootstrap JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </body>
 </html>
