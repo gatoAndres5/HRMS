@@ -50,15 +50,23 @@ Please fill in all the modules you use in the project and make them hyperlinked 
 APIs
 ----------
 
-- API Class 1 – Route: /Route1/\*
+- API Class 1 – Route: /users/\*
 
 |APIs|Description|HTTP Method|
 | :- | :- | :- |
-|API\_1|Description 1|GET|
-|API\_2|Description 1|POST|
-|API\_3|Description 1|GET|
-|API\_4|Description 1|POST|
-|...|...|...|
+|/signUp|Registers a new user with provided details (email, password, role, devices, etc.)|POST|
+|/logIn|Logs in an existing user by validating email and password, and returns a JWT token|POST|
+|/status|Checks the user's authentication status by decoding the JWT token and returns user details|GET|
+|/patient|Fetches patient information by name (requires X-Auth header with JWT)|GET|
+|/updatePassword|Updates the user's password after validating the current password|PUT|
+|/validatePassword|Validates the user's current password against the database|POST|
+|/updateDevices|Updates the devices array for a user|PUT|
+|/getDevices|Fetches the devices associated with the user's email|GET|
+|/getUserEmail|Retrieves the user's email from the JWT token|GET|
+|/getPhysicians|Fetches a list of physicians from the database (requires valid JWT)|GET|
+|/assignPhysician|Assigns a physician to a patient based on email and physician's name|PUT|
+|/getAssignedPhysician|Fetches the assigned physician for a given patient by email|GET|
+|/submitMeasurement|Submits a measurement for a user (time range, frequency, etc.)|POST|
 
 - API Class 2 – Route: /Route2/\*
 

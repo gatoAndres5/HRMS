@@ -2,3 +2,4 @@
 *.o
 *.d
 pulseoximeter/pulse2/nul
+src/node_modules/
