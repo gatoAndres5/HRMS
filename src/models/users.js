@@ -31,11 +31,11 @@ const userSchema = new mongoose.Schema({
     },
     sensorReadings: [{
         heartRate: {
-            date: {type: String},
+            date: {type: Date},
             bpm: {type: Number}
         },
         oxygenSaturation: {
-            date: {type: String},
+            date: {type: Date},
             o2: {type: Number}
         }
     }

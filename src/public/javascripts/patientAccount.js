@@ -1,4 +1,6 @@
 let userEmail = null;
+let heartRateChartInstance = null;
+let oxygenChartInstance = null;
 // Function to convert 24-hour time to 12-hour format with AM/PM
 function convertTo12HourFormat(time24) {
     const [hour, minute] = time24.split(":").map(Number);
@@ -6,6 +8,26 @@ function convertTo12HourFormat(time24) {
     const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
     return `${hour12}:${minute.toString().padStart(2, "0")} ${period}`;
 }
+// Helper function to calculate the average of an array of numbers
+function calculateAverage(data) {
+    const sum = data.reduce((total, value) => total + value, 0);
+    return Math.round(sum / data.length) || 0;  // Round to nearest integer
+}
+// Helper function to group sensor readings by date
+function groupReadingsByDate(readings) {
+    return readings.reduce((acc, entry) => {
+        const date = new Date(entry.heartRate.date).toISOString().split('T')[0];  // Get the date part only (YYYY-MM-DD)
+
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+
+        acc[date].push(entry);  // Add the entry to the corresponding date group
+
+        return acc;
+    }, {});
+}
+
 // Function to fetch updated data and refresh the UI
 function refreshMeasurementData() {
     $.ajax({
@@ -27,105 +49,93 @@ function refreshMeasurementData() {
         alert('Could not refresh data. Please try again later.');
     });
 }
-$(function () {
-    refreshMeasurementData();
-    $('#measurementForm').submit(function (event) {
-        event.preventDefault(); // Prevent default form submission
+// Function to fetch updated data and refresh the UI
+function fetchSensorReadings() {
+    $.ajax({
+        url: '/users/getSensorReadings',
+        method: 'GET',
+        headers: { 'x-auth': window.localStorage.getItem("token") },
+        dataType: 'json'
+    })
+    .done(function (data) {
+        console.log('Sensor Readings:', data);
 
-        // Collect form data from input fields
-        let txdata = {
-            timeRangeStart: $('#timeRangeStart').val(), // Get value from start time input
-            timeRangeEnd: $('#timeRangeEnd').val(),     // Get value from end time input
-            frequency: $('#frequency').val(),          // Get value from frequency input
-            user: userEmail
-        };
+        // Filter the data to include only the last week
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-        // Send the data to the backend
-        $.ajax({
-            url: '/users/submitMeasurement', // Backend route
-            method: 'POST',
-            contentType: 'application/json',
-            headers: { 'x-auth': window.localStorage.getItem("token") }, // Send the token for authentication
-            data: JSON.stringify(txdata), // Send the form data as JSON
-            dataType: 'json'
-        })
-        .done(function (response) {
-            // Handle the success response
-            console.log('Data updated:', response);
-            // Fetch the updated data and refresh the UI
-            refreshMeasurementData();
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            // Handle failure
-            console.error('Error:', errorThrown);
-            alert('An error occurred, please try again.');
+        const filteredReadings = data.sensorReadings.filter(reading => {
+            const readingDate = new Date(reading.heartRate.date);
+            return readingDate >= oneWeekAgo;
         });
-    });
+        console.log("Filterd Readiings:", filteredReadings);
 
-    // Populate Weekly Summary Data
-    const weeklyData = {
-        averageHeartRate: 75,
-        minHeartRate: 60,
-        maxHeartRate: 90
-    };
-    console.log("Weekly Data:", weeklyData);  // Debugging: Check weekly data
-    $("#avgHeartRate").text(weeklyData.averageHeartRate);
-    $("#minHeartRate").text(weeklyData.minHeartRate);
-    $("#maxHeartRate").text(weeklyData.maxHeartRate);
+        // Calculate average, min, and max heart rate for the week
+        const heartRates = filteredReadings.map(reading => reading.heartRate.bpm);
+        const averageHeartRate = calculateAverage(heartRates);
+        const minHeartRate = Math.min(...heartRates);
+        const maxHeartRate = Math.max(...heartRates);
 
-    // Data for Detailed Daily View
-    const dailyData = {
-        "2024-12-01": {
-            heartRate: [65, 70, 72, 68, 75, 80, 85],
-            oxygenSaturation: [98, 97, 96, 97, 98, 99, 97],
-            times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
-        },
-        "2024-12-02": {
-            heartRate: [62, 66, 68, 65, 72, 77, 83],
-            oxygenSaturation: [97, 96, 96, 98, 99, 98, 96],
-            times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
-        },
-        "2024-12-03": {
-            heartRate: [62, 66, 68, 65, 72, 70, 102],
-            oxygenSaturation: [97, 96, 96, 98, 99, 98, 96],
-            times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
-        },
-        "2024-12-04": {
-            heartRate: [62, 66, 68, 65, 72, 77, 83],
-            oxygenSaturation: [97, 96, 96, 98, 99, 98, 96],
-            times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
+        // Update Weekly Summary Data
+        const weeklySummary = {
+            averageHeartRate: averageHeartRate,
+            minHeartRate: minHeartRate,
+            maxHeartRate: maxHeartRate
+        };
+        $("#avgHeartRate").text(weeklySummary.averageHeartRate);
+        $("#minHeartRate").text(weeklySummary.minHeartRate);
+        $("#maxHeartRate").text(weeklySummary.maxHeartRate);
+
+        
+        const groupedByDate = groupReadingsByDate(data.sensorReadings);
+
+        // Update Day Selector options
+        const daySelector = $("#daySelector");
+        daySelector.empty();
+
+        // Populate day selector with the available dates
+        Object.keys(groupedByDate).forEach(day => {
+            daySelector.append(new Option(day, day));
+        });
+
+        // Handle Day Selection for Detailed Daily View
+        daySelector.change(function () {
+            const selectedDay = $(this).val();
+            const selectedData = groupedByDate[selectedDay];
+
+            if (selectedData) {
+                console.log("Selected day data:", selectedData);
+                // Extract times, heart rate, and oxygen saturation from the selected data
+                const heartRates = selectedData.map(entry => entry.heartRate.bpm);
+                const oxygenSaturation = selectedData.map(entry => entry.oxygenSaturation.o2);
+                const times = selectedData.map(entry => {
+                    const date = new Date(entry.heartRate.date);
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                });
+
+                // Update charts
+                updateChart("heartRateChart", "Heart Rate (bpm)", heartRates, times, "rgba(255, 99, 132, 1)", "rgba(255, 99, 132, 0.2)");
+                updateChart("oxygenChart", "Oxygen Saturation (%)", oxygenSaturation, times, "rgba(54, 162, 235, 1)", "rgba(54, 162, 235, 0.2)");
+            } else {
+                console.warn("No data found for the selected day:", selectedDay);
+            }
+        });
+
+        // Trigger change for the default day if available
+        if (Object.keys(groupedByDate).length > 0) {
+            daySelector.trigger("change");
         }
-    };
-    console.log("Daily Data:", dailyData);  // Debugging: Check daily data
-
-    // Handle Day Selection for Detailed Daily View
-    $("#daySelector").change(function () {
-        const selectedDay = $(this).val();
-        console.log("Day selected:", selectedDay);  // Debugging: Log the selected day
-        const data = dailyData[selectedDay];
-
-        if (data) {
-            // Debugging: Log the data for the selected day
-            console.log("Selected day data:", data);
-            // Update charts with the selected day's data
-            updateChart("heartRateChart", "Heart Rate (bpm)", data.heartRate, data.times, "rgba(255, 99, 132, 1)", "rgba(255, 99, 132, 0.2)");
-            updateChart("oxygenChart", "Oxygen Saturation (%)", data.oxygenSaturation, data.times, "rgba(54, 162, 235, 1)", "rgba(54, 162, 235, 0.2)");
-        } else {
-            // Debugging: Log when no data is found for the selected day
-            console.warn("No data found for the selected day:", selectedDay);
-        }
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        console.error('Error fetching sensor readings:', textStatus, errorThrown);
+        alert('Could not fetch sensor readings. Please try again later.');
     });
-
-    // Chart update function
-    let heartRateChartInstance = null;
-let oxygenChartInstance = null;
-
+}
 function updateChart(canvasId, label, data, labels, borderColor, backgroundColor) {
     console.log(`Updating chart: ${canvasId}, Label: ${label}`);
   
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext("2d");
-  
     // Clear the canvas completely before using it
     console.log(`Clearing canvas with ID: ${canvasId}`);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -194,7 +204,7 @@ function updateChart(canvasId, label, data, labels, borderColor, backgroundColor
             },
             options: {
                 scales: {
-                    x: { title: { display: true, text: "Time of Day" } },
+                    x: { title: { display: true, text: "Time of Day (MST)" } },
                     y: { title: { display: true, text: label } }
                 },
                 plugins: {
@@ -247,6 +257,41 @@ function updateChart(canvasId, label, data, labels, borderColor, backgroundColor
     }
 }
 
+$(function () {
+    refreshMeasurementData();
+    fetchSensorReadings();
+    $('#measurementForm').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Collect form data from input fields
+        let txdata = {
+            timeRangeStart: $('#timeRangeStart').val(), // Get value from start time input
+            timeRangeEnd: $('#timeRangeEnd').val(),     // Get value from end time input
+            frequency: $('#frequency').val(),          // Get value from frequency input
+            user: userEmail
+        };
+
+        // Send the data to the backend
+        $.ajax({
+            url: '/users/submitMeasurement', // Backend route
+            method: 'POST',
+            contentType: 'application/json',
+            headers: { 'x-auth': window.localStorage.getItem("token") }, // Send the token for authentication
+            data: JSON.stringify(txdata), // Send the form data as JSON
+            dataType: 'json'
+        })
+        .done(function (response) {
+            // Handle the success response
+            console.log('Data updated:', response);
+            // Fetch the updated data and refresh the UI
+            refreshMeasurementData();
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            // Handle failure
+            console.error('Error:', errorThrown);
+            alert('An error occurred, please try again.');
+        });
+    });
 
 });
 
