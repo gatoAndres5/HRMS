@@ -4,6 +4,7 @@ var User = require("../models/users");
 const jwt = require("jwt-simple");
 const bcrypt = require("bcryptjs");
 const fs = require('fs');
+const { sendData } = require('./particle-webhook'); // added to update device
 
 // On AWS ec2, you can use to store the secret in a separate file. 
 // The file should be stored outside of your code directory. 
@@ -509,6 +510,8 @@ router.post("/submitMeasurement", function (req, res) {
                 console.error("Error saving data:", saveErr.message);
                 return res.status(500).json({ success: false, msg: "Failed to save data" });
             }
+            
+            sendData(user.devices[0].id, user.devices[0].accessToken,frequency, timeRangeStart, timeRangeEnd); // Pass relevant data to sendData
 
             // Respond with success
             res.status(200).json({ success: true, msg: "Measurement data successfully updated" });
