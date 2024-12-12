@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors'); // Import CORS middleware
 var router = express.Router();
-var User = require("../models/users");
+var User = require("../models/users");  
 
 
 const Particle = require('particle-api-js');
