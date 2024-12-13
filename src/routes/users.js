@@ -519,37 +519,45 @@ router.post("/submitMeasurement", function (req, res) {
     });
 });
 // Endpoint to fetch sensor readings for a user using x-auth token
+// Endpoint to fetch sensor readings for a user or a specific patient using x-auth token
 router.get("/getSensorReadings", function (req, res) {
     // Check if the X-Auth header is set
     if (!req.headers["x-auth"]) {
         return res.status(401).json({ success: false, msg: "Missing X-Auth header" });
     }
 
-    // X-Auth should contain the JWT token
+    // Extract the JWT token
     const token = req.headers["x-auth"];
     try {
-        // Decode the JWT token without verifying (you can also verify it, but for this example, we only decode)
-        const decoded = jwt.decode(token, secret); // Decode the token
+        // Decode the JWT token
+        const decoded = jwt.decode(token, secret);
 
         // Log the decoded token for debugging
         console.log("Decoded token:", decoded);
 
         const userEmail = decoded.email; // Get the email from the decoded token
-        console.log("User Email:", userEmail);  // Should be printed
+        console.log("User Email:", userEmail);
 
-        // Fetch the user from the database using the decoded email
-        User.findOne({ email: userEmail }, 'sensorReadings', function (err, user) {
+        // Extract the patient query parameter if provided
+        const patientName = req.query.patient;
+        console.log("Patient Name Query:", patientName);
+
+        // If a patient name is provided, fetch their data; otherwise, fetch the logged-in user's data
+        const query = patientName ? { name: patientName } : { email: userEmail };
+
+        // Fetch the user or patient from the database
+        User.findOne(query, 'sensorReadings', function (err, user) {
             if (err) {
                 console.error("Database query error:", err.message);
                 return res.status(500).json({ success: false, msg: "Database error" });
             }
 
             if (!user) {
-                return res.status(404).json({ success: false, msg: "User not found" });
+                return res.status(404).json({ success: false, msg: "User or patient not found" });
             }
 
             const sensorReadings = user.sensorReadings; // Get the sensor readings from the user document
-            console.log("Sensor Readings:", sensorReadings);  // Log the sensor readings
+            console.log("Sensor Readings:", sensorReadings);
 
             if (!sensorReadings || sensorReadings.length === 0) {
                 return res.status(404).json({ success: false, msg: "No sensor readings found" });
