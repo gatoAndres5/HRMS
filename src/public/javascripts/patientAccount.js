@@ -73,9 +73,8 @@ function fetchSensorReadings() {
         // Calculate average, min, and max heart rate for the week
         const heartRates = filteredReadings.map(reading => reading.heartRate.bpm);
         const averageHeartRate = calculateAverage(heartRates);
-        const minHeartRate = Math.min(...heartRates);
-        const maxHeartRate = Math.max(...heartRates);
-
+        const minHeartRate = Math.round(Math.min(...heartRates)) || 0;
+        const maxHeartRate = Math.round(Math.max(...heartRates)) || 0;
         // Update Weekly Summary Data
         const weeklySummary = {
             averageHeartRate: averageHeartRate,
