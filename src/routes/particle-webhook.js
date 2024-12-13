@@ -2,10 +2,13 @@ const express = require('express');
 const cors = require('cors'); // Import CORS middleware
 var router = express.Router();
 var User = require("../models/users");
+const fetch = require('node-fetch');
+const { stringify } = require('querystring');
 
 
-const Particle = require('particle-api-js');
-const toDevice = new Particle();
+
+//const Particle = require('particle-api-js');
+//const toDevice = new Particle();
 
 //include in app.js:
 // app.use(cors());
@@ -37,7 +40,8 @@ router.post('/webhook', async (req,res) =>{
 
         //"data": "{\BPM\ :beatPerMinute),\O2\: o2Value}" 
 
-        User.findOne({'devices[0].id': jsonObj.coreid}, function(err,user){
+        User.findOne({'devices.0.id': jsonObj.coreid}, function(err,user){
+            
             if (err) {
                 return res.status(500).json({ success: false, msg: "Database error." });
             }
@@ -45,25 +49,30 @@ router.post('/webhook', async (req,res) =>{
             if (!user) {
                 return res.status(404).json({ success: false, msg: "User not found." });
             }
+           //console.log("finds id");
+            
+            const data = JSON.parse(jsonObj.data);
 
             //Add new sensor readings to the User's sensorReadings array
             user.sensorReadings.push({
                 heartRate: {
                     date: jsonObj.published_at,
-                    bpm: jsonObj.data.BPM   //Correct way to access an json obj in an json obj??
+                    bpm: data.BPM  //Correct way to access an json obj in an json obj??
                 },
                 oxygenSaturation: {
                     date: jsonObj.published_at,
-                    o2: jsonObj.data.O2
+                    o2: data.O2
                 }
             });
+            //console.log(user.email);
+            //console.log(user.devices[0].id);
 
             user.save(function (saveErr) {
                 if (saveErr) {
                     console.error("Error saving data:", saveErr.message);
                     return res.status(500).json({ success: false, msg: "Failed to save data" });
                 }
-
+                console.log("data saved");
                 // Respond with success
                 res.status(200).json({ success: true, msg: "Data recieved" });
             });
@@ -89,32 +98,68 @@ function sendData(deviceID, token, freq, startTime, endTime) {
 
     //const webhookURL = "https://api.particle.io/v1/devices/"+{deviceID}+"/reading"; //...devices/${deviceID}/${functionName} currently hard coded as reading
 
-    const dataSend = {
-        Wait: freq,
-        Start: startTime,
-        End: endTime
-    };
+    const freqSend = {W:freq};
+    const startSend = {S:startTime};
+    const endSend = {E:endTime};
+
 
     // const header = {
     //     'Content-Type': 'application/json',
     //     'Accept': 'application/json',
     // };
+    //Eli token: c204b1548c6579856d9382ae1f45531f2181983b
 
-    $.ajax({    //correct way to format data?
-        url: 'https://api.particle.io/v1/devices/$deviceID/update',   //will deviceID populate?
-        type: 'POST',
-        headers: {'Authorization':'Bearer $token'},
-        data:{
-            dataSend,
+    const urlFreq = `https://api.particle.io/v1/devices/${deviceID}/freq`;
+    const urlStart = `https://api.particle.io/v1/devices/${deviceID}/start`;
+    const urlEnd = `https://api.particle.io/v1/devices/${deviceID}/end`;
+
+    fetch(urlFreq, { //send frequency update
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
         },
-        success: function (particleResponse) {
-            console.log("Particle response:", particleResponse);
-        },
-        error: function (error) {
-            console.error("Particle error:", error);
-        }
+        body: JSON.stringify(freqSend)
     })
+    .then(response => response.json())
+    .then(particleResponse => {
+        console.log("Particle response:", particleResponse);
+    })
+    .catch(error => {
+        console.log("Particle error:", error);
+    });
 
+    fetch(urlStart, {    //send start time
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(startSend)
+    })
+    .then(response => response.json())
+    .then(particleResponse => {
+        console.log("Particle response:", particleResponse);
+    })
+    .catch(error => {
+        console.log("Particle error:", error);
+    });
+
+    fetch(urlEnd, {    //send end time
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(endSend)
+    })
+    .then(response => response.json())
+    .then(particleResponse => {
+        console.log("Particle response:", particleResponse);
+    })
+    .catch(error => {
+        console.log("Particle error:", error);
+    });
     
 }
 
