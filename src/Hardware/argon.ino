@@ -144,7 +144,7 @@ void loop(){
                 ledCount++;
             }
 
-            if((irValue > 73000) && (irValue < 147000)){ //BPM range from 40-80 depending on age and fitness level ir 73k to 146k
+            if((irValue > 73000) ){ //BPM minumum range of 40 depending on age and fitness level ir 73k 
                 currentState = PROCESS;
                 ledCount = 0;
                 
