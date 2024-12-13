@@ -9,8 +9,8 @@ const bodyParser = require('body-parser');     // Parses JSON in body
 
 
 var usersRouter = require('./routes/users');
-var particleWebhookRouter = require('./routes/particle-webhook'); // Update path as needed
 
+const { router: particleWebhookRouter } = require('./routes/particle-webhook');
 
 var app = express();
 

@@ -128,7 +128,7 @@ function fetchSensorReadings() {
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
         console.error('Error fetching sensor readings:', textStatus, errorThrown);
-        alert('Could not fetch sensor readings. Please try again later.');
+        alert('No sensor readings available. Please try again later.');
     });
 }
 function updateChart(canvasId, label, data, labels, borderColor, backgroundColor) {
