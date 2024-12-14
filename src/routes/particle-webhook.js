@@ -3,7 +3,6 @@ const cors = require('cors'); // Import CORS middleware
 var router = express.Router();
 var User = require("../models/users");
 const fetch = require('node-fetch');
-const { stringify } = require('querystring');
 
 
 
