@@ -154,6 +154,7 @@ void loop(){
         case PROCESS: 
             beatPerMinute = irValue / 1831.0;
             o2Vlaue = 110 - 25* (redValue/irValue);
+            if(o2Vlaue > 100){o2Vlaue = 100;} //cannot have over 100% O2
             dataRead = "{\"BPM\":"+ String(beatPerMinute) + ",\"O2\":" + String(o2Vlaue) + "}";
             //Serial.println(dataRead);
 
@@ -207,7 +208,8 @@ void loop(){
             for(int j=0;j<(wait-(uploadDelay/6));j++){
                 delay(60000);
             }
-
+            uploadDelay = 0; //turn upload delay back to 0 after it has been accounted for
+            
             if(!timeValid){
                 currentState = IDLE;
             }
