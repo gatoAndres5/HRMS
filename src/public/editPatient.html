@@ -30,6 +30,14 @@
         })
         .catch(error => console.error('Error loading dashboard:', error));
     </script>
+    <!-- Authentication Check -->
+    <script>
+      (function () {
+        if (!window.localStorage.getItem("token")) {
+          window.location.replace("display.html");
+        }
+      })();
+    </script>
 
     <!-- Main Content -->
     <div class="container">

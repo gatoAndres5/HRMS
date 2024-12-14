@@ -1,9 +1,10 @@
 body {
-    padding: 50px;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    background: linear-gradient(120deg, #f3f4f6, #e8eaf6);
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
 }
 a {
-    color: #00B7FF;
+    color: #207191;
 }
 .bg-az-blue {
     background-color: rgb(13, 36, 75);
@@ -24,4 +25,87 @@ a {
 .nav-wrapper {
     height: 65px;
     margin-bottom: 25px;
+}
+/* Main container */
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 500px;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+.main-content .container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 500px;
+    margin-top: -20px;
+    padding: 2rem;
+    box-sizing: border-box;
+
+}
+
+/* Card styling */
+.responsive-card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 1000px;
+    width: 100%;
+    margin-top: 10px;
+    transition: transform 0.2s ease-in-out;
+    color: red;
+}
+
+
+
+.responsive-card:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+}
+
+/* Header */
+.responsive-card h4 {
+    color: rgb(13, 36, 75);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+
+.collection-item {
+    color: rgb(13, 36, 75) !important; /* Explicit blue color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.collection-item:hover {
+    background: #1565c0;
+    color: #ffffff;
+    transform: translateY(-2px); /* Slight lift */
+}
+
+.collection-item::before {
+    content: '→'; /* Add icons (e.g., arrow) */
+    margin-right: 8px;
+    color: rgb(13, 36, 75);
+    font-size: 1.2rem;
+}
+.maincontent .container .responsive-card .collection{
+    border: 2px solid blue;
+}
+.container h4{
+    color: rgb(13, 36, 75);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
 }

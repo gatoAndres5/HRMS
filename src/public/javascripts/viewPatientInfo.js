@@ -39,7 +39,6 @@ function fetchPatientInfo(patientName, callback) {
         dataType: 'json'
     })
     .done(function (data) {
-        console.log('Sensor Readings:', data);
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -75,7 +74,6 @@ function fetchPatientInfo(patientName, callback) {
             const selectedData = groupedByDate[selectedDay];
 
             if (selectedData) {
-                console.log("Selected day data:", selectedData);
                 // Extract times, heart rate, and oxygen saturation from the selected data
                 const heartRates = selectedData.map(entry => entry.heartRate.bpm);
                 const oxygenSaturation = selectedData.map(entry => entry.oxygenSaturation.o2);
@@ -114,7 +112,6 @@ function refreshMeasurementData(patientName) {
         dataType: 'json'
     })
     .done(function (data) {
-        console.log('Refreshed data:', data);
         userEmail = data.email;
         document.getElementById('patientTitle').textContent = `${data.name}'s Patient Dashboard`;
         document.getElementById("currentStartTime").textContent = convertTo12HourFormat(data.measurements.startTime);
@@ -143,7 +140,6 @@ function refreshMeasurementData(patientName) {
 $(function () {
     const urlParams = new URLSearchParams(window.location.search);
     const patientName = urlParams.get('patient');  // Get 'patient' query parameter
-    console.log("Patient Name from query:", patientName);
 
     // Fetch and display the user data based on patient name
     refreshMeasurementData(patientName);
@@ -168,7 +164,6 @@ $(function () {
             dataType: 'json'
         })
         .done(function (response) {
-            console.log('Data updated:', response);
             refreshMeasurementData(patientName);
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
@@ -182,24 +177,20 @@ $(function () {
 
 
 function updateChart(canvasId, label, data, labels, borderColor, backgroundColor) {
-    console.log(`Updating chart: ${canvasId}, Label: ${label}`);
   
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext("2d");
     // Clear the canvas completely before using it
-    console.log(`Clearing canvas with ID: ${canvasId}`);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   
     // Destroy existing chart instance if it exists
     if (canvasId === "heartRateChart") {
         if (heartRateChartInstance) {
-            console.log(`Destroying existing chart with ID: heartRateChart`);
             heartRateChartInstance.destroy();
             heartRateChartInstance = null;
         }
     } else if (canvasId === "oxygenChart") {
         if (oxygenChartInstance) {
-            console.log(`Destroying existing chart with ID: oxygenChart`);
             oxygenChartInstance.destroy();
             oxygenChartInstance = null;
         }
@@ -214,7 +205,6 @@ function updateChart(canvasId, label, data, labels, borderColor, backgroundColor
     const maxValue = Math.max(...data);
   
     try {
-        console.log(`Creating new chart with ID: ${canvasId}`);
         const newChart = new Chart(ctx, {
             type: "line",
             data: {
@@ -297,10 +287,8 @@ function updateChart(canvasId, label, data, labels, borderColor, backgroundColor
         // Assign the new chart instance to the appropriate variable
         if (canvasId === "heartRateChart") {
             heartRateChartInstance = newChart;
-            console.log(`Assigned new chart instance to heartRateChart`);
         } else if (canvasId === "oxygenChart") {
             oxygenChartInstance = newChart;
-            console.log(`Assigned new chart instance to oxygenChart`);
         }
     } catch (error) {
         console.error("Error creating the chart:", error);

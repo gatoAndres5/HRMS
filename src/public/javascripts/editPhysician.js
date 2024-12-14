@@ -1,3 +1,5 @@
+
+
 function isStrongPassword(password) {
     // Regex for password validation
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -15,7 +17,6 @@ $(document).ready(function () {
                 'x-auth': localStorage.getItem('token')
             },
             success: function (response) {
-                console.log(response);  // Process response
                 physicianEmail = response.email; // Assign the fetched email to patientEmail
             },
             error: function (error) {
@@ -24,12 +25,10 @@ $(document).ready(function () {
         });
     }
 
-
     // Update message display
     function updateMessage(message) {
         $('#messageBox').text(message).fadeIn().delay(3000).fadeOut();
     }
-
 
     // Change password
     $('#btnChangePassword').click(function () {
@@ -43,7 +42,7 @@ $(document).ready(function () {
     
         // Password validation
         if (!isStrongPassword(newPassword)) {
-            window.alert(
+            updateMessage(
                 "Invalid password! Your password must be at least 8 characters long, " +
                 "and include an uppercase letter, a lowercase letter, a number, and a special character."
             );
@@ -66,7 +65,7 @@ $(document).ready(function () {
                     // If the current password is correct, proceed to update the password
                     updatePassword(newPassword, currentPassword);
                 } else {
-                    window.alert(
+                    updateMessage(
                         "Invalid password! Your password must be at least 8 characters long, " +
                         "and include an uppercase letter, a lowercase letter, a number, and a special character."
                     );

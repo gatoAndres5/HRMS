@@ -14,7 +14,6 @@ const secret = fs.readFileSync(__dirname + '/../keys/jwtkey').toString();
 
 // Signup route
 router.post("/signUp", function (req, res) {
-    console.log(req.body);  // Log to check incoming request body
 
     const { email, password, role, devices, name, physicians } = req.body;
     if (!role) {
@@ -153,8 +152,6 @@ router.get("/patient", function (req, res) {
             if (err) {
                 return res.status(400).json({ success: false, message: "Error contacting DB. Please contact support." });
             } else if (user) {
-                // Since patients is now just an array of names, you can return the data directly.
-                console.log("user found: ", user);
                 const patientData = user.patients.includes(patientName) ? patientName : null;
                 res.status(200).json({ email: user.email, measurements: user.measurements, name: user.name });
                
@@ -169,7 +166,6 @@ router.get("/patient", function (req, res) {
 // Update user's password
 router.put("/updatePassword", function (req, res) {
     const { email, currentPassword, newPassword } = req.body;
-    console.log("Request Data:", req.body);
 
     if (!email ||  !currentPassword || !newPassword) {
         return res.status(400).json({ success: false, msg: "Missing email, current password, or new password." });
@@ -297,11 +293,7 @@ router.get("/getPhysicians", function (req, res) {
         // Decode the JWT token without verifying
         const decoded = jwt.decode(token, secret);  // Decode the token
 
-        // Log the decoded token for debugging
-        console.log("Decoded token:", decoded);
-
         const userEmail = decoded.email;
-        console.log("User Email:", userEmail);  // Should be printed
 
         // Fetch the user's role from the database using the decoded email
         User.findOne({ email: userEmail }, 'role', function (err, user) {
@@ -315,7 +307,6 @@ router.get("/getPhysicians", function (req, res) {
             }
 
             const userRole = user.role;
-            console.log("User Role:", userRole);  // Should be printed
 
             // Role-based logic: only authenticated users with valid roles can fetch physicians
             if (userRole !== 'Patient' && userRole !== 'Physician') {
@@ -352,7 +343,6 @@ router.put("/assignPhysician", function (req, res) {
         console.error("Missing email or physicianName. Request body:", req.body);
         return res.status(400).json({ success: false, msg: "Email and physician name are required." });
     }
-    console.log(`Looking for patient with email: ${email}`);
     // Find the patient by email
     User.findOne({ email: email, role: 'Patient' }, function (err, patient) {
         if (err) {
@@ -364,12 +354,10 @@ router.put("/assignPhysician", function (req, res) {
             console.log(`No patient found with email: ${email}`);
             return res.status(404).json({ success: false, msg: "Patient not found" });
         }
-        console.log(`Patient found: ${patient.name} (Email: ${patient.email})`);
 
         // If the patient already has an assigned physician, find the current physician
         const currentPhysicianName = patient.physicians;
         // Find the new physician by name
-        console.log(`Looking for new physician with name: ${physicianName}`);
         User.findOne({ name: physicianName, role: 'Physician' }, function (err, newPhysician) {
             if (err) {
                 console.error("Database error while finding new physician:", err.message);
@@ -381,11 +369,8 @@ router.put("/assignPhysician", function (req, res) {
                 return res.status(404).json({ success: false, msg: "New physician not found" });
             }
 
-            console.log(`New physician found: ${newPhysician.name} (Email: ${newPhysician.email})`);
-
             // Remove the patient from the current physician's patients array if applicable
             if (currentPhysicianName) {
-                console.log(`Looking for current physician with name: ${currentPhysicianName}`);
                 User.findOne({ name: currentPhysicianName, role: 'Physician' }, function (err, currentPhysician) {
                     if (err) {
                         console.error("Database error while finding current physician:", err.message);
@@ -393,12 +378,8 @@ router.put("/assignPhysician", function (req, res) {
                     }
 
                     if (currentPhysician) {
-                        console.log(`Current physician found: ${currentPhysician.name} (Email: ${currentPhysician.email})`);
                         // Remove the patient from the current physician's patients array
                         currentPhysician.patients = currentPhysician.patients.filter(p => p !== patient.name);
-
-                        console.log(`Removing patient ${patient.name} from current physician ${currentPhysician.name}`);
-
                         // Save the updated current physician record
                         currentPhysician.save(err => {
                             if (err) {
@@ -409,7 +390,6 @@ router.put("/assignPhysician", function (req, res) {
                     }
                 });
             }
-
             // Assign the new physician to the patient
             patient.physicians = newPhysician.name;
 
@@ -417,9 +397,6 @@ router.put("/assignPhysician", function (req, res) {
             if (!newPhysician.patients.includes(patient.name)) {
                 newPhysician.patients.push(patient.name);
             }
-
-            console.log(`Assigning new physician ${newPhysician.name} to patient ${patient.name}`);
-            console.log(`Adding patient ${patient.name} to new physician ${newPhysician.name}`);
 
             // Save both updated records
             Promise.all([
@@ -462,7 +439,6 @@ router.get("/getAssignedPhysician", function (req, res) {
         }
 
         const assignedPhysician = patient.physicians; // Access the physicians field
-        console.log("Assigned Physician:", assignedPhysician);  // Log the assigned physician
 
         if (!assignedPhysician) {
             return res.status(404).json({ success: false, msg: "No assigned physician found" });
@@ -479,14 +455,12 @@ router.post("/submitMeasurement", function (req, res) {
     if (!timeRangeStart || !timeRangeEnd || !frequency) {
         return res.status(400).json({ success: false, msg: "All fields (timeRangeStart, timeRangeEnd, frequency) are required" });
     }
-    // Log the user object to inspect its contents
-    console.log("User object: ", user);
 
     if (!user) {
         return res.status(401).json({ success: false, msg: "Unauthorized" });
     }
 
-    // Find the customer in the database by their unique identifier (e.g., email or ID)
+    // Find the customer in the database by their email
     User.findOne({ email: user }, function (err, user) {
         if (err) {
             console.error("Database query error:", err.message);
@@ -518,7 +492,7 @@ router.post("/submitMeasurement", function (req, res) {
         });
     });
 });
-// Endpoint to fetch sensor readings for a user using x-auth token
+
 // Endpoint to fetch sensor readings for a user or a specific patient using x-auth token
 router.get("/getSensorReadings", function (req, res) {
     // Check if the X-Auth header is set
@@ -532,15 +506,10 @@ router.get("/getSensorReadings", function (req, res) {
         // Decode the JWT token
         const decoded = jwt.decode(token, secret);
 
-        // Log the decoded token for debugging
-        console.log("Decoded token:", decoded);
-
         const userEmail = decoded.email; // Get the email from the decoded token
-        console.log("User Email:", userEmail);
 
         // Extract the patient query parameter if provided
         const patientName = req.query.patient;
-        console.log("Patient Name Query:", patientName);
 
         // If a patient name is provided, fetch their data; otherwise, fetch the logged-in user's data
         const query = patientName ? { name: patientName } : { email: userEmail };
@@ -557,7 +526,6 @@ router.get("/getSensorReadings", function (req, res) {
             }
 
             const sensorReadings = user.sensorReadings; // Get the sensor readings from the user document
-            console.log("Sensor Readings:", sensorReadings);
 
             if (!sensorReadings || sensorReadings.length === 0) {
                 return res.status(404).json({ success: false, msg: "No sensor readings found" });
