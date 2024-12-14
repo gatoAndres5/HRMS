@@ -29,7 +29,6 @@ function collectDevices() {
             });
         }
     });
-    console.log("Devices collected:", devices);  // Check the structure here
     return devices;
 }
 
@@ -69,7 +68,6 @@ function signup() {
 
     // Collect devices
     const devices = collectDevices();
-    console.log(devices)
 
     // Ensure at least one device is added
     if (devices.length === 0) {
@@ -86,7 +84,6 @@ function signup() {
         physicians: "None",
         name: name
     };
-    console.log("Data being sent:", txdata);
     // Make AJAX request
     $.ajax({
         url: '/users/signUp',

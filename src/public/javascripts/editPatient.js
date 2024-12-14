@@ -17,7 +17,6 @@ $(document).ready(function () {
                 'x-auth': localStorage.getItem('token')
             },
             success: function (response) {
-                console.log(response);  // Process response
                 patientEmail = response.email; // Assign the fetched email to patientEmail
                 loadDevices();  // Now that email is set, load devices
                 loadAssignedPhysician(); // Load the assigned physician
@@ -31,7 +30,6 @@ $(document).ready(function () {
     // Load devices from the server
     function loadDevices() {
         if (!patientEmail) {
-            console.log('Patient email is not set.');
             return; // Ensure email is set before making the request
         }
 
@@ -141,8 +139,8 @@ $(document).ready(function () {
     
         // Password validation
         if (!isStrongPassword(newPassword)) {
-            window.alert(
-                "Invalid password! Your password must be at least 8 characters long, " +
+            updateMessage(
+                "Invalid new password! Your password must be at least 8 characters long, " +
                 "and include an uppercase letter, a lowercase letter, a number, and a special character."
             );
             return;
@@ -164,8 +162,7 @@ $(document).ready(function () {
                     // If the current password is correct, proceed to update the password
                     updatePassword(newPassword, currentPassword);
                 } else {
-                    console.log("here")
-                    window.alert(
+                    updateMessage(
                         "Invalid password! Your password must be at least 8 characters long, " +
                         "and include an uppercase letter, a lowercase letter, a number, and a special character."
                     );
@@ -208,7 +205,7 @@ $(document).ready(function () {
             url: '/users/getAssignedPhysician', // Endpoint to fetch the assigned physician
             type: 'GET',
             headers: {
-                'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
+                'x-auth': localStorage.getItem('token') // Using a token for authentication
             },
             data: { email: patientEmail }, // Pass email to fetch assigned physician
             success: function (response) {
@@ -223,10 +220,10 @@ $(document).ready(function () {
  // Load physicians from the server
  function loadPhysicians() {
     $.ajax({
-        url: '/users/getPhysicians', // Ensure this is the correct endpoint to get the physicians
+        url: '/users/getPhysicians', // Endpoint to get the physicians
         type: 'GET',
         headers: {
-            'x-auth': localStorage.getItem('token') // Assuming you're using a token for authentication
+            'x-auth': localStorage.getItem('token') // Using a token for authentication
         },
         success: function (response) {
             const physicians = response.physicians || [];
@@ -267,8 +264,6 @@ $('#btnAssignPhysician').click(function () {
         updateMessage('Please select a physician.');
         return;
     }
-    console.log("Selected Physician Name:", selectedPhysicianName);
-
     $.ajax({
         url: '/users/assignPhysician',
         type: 'PUT',
@@ -288,8 +283,6 @@ $('#btnAssignPhysician').click(function () {
         }
     });
 });
-
-
     // Initialize by fetching the patient email
     fetchPatientEmail();
 });

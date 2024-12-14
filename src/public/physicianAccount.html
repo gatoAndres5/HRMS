@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="stylesheets/style.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="javascripts/physicianAccount.js"></script>
+    <script>
+      // Check authentication
+      (function () {
+        if (!window.localStorage.getItem("token")) {
+          window.location.replace("display.html");
+        }
+      })();
+    </script>
   </head>
   <body>
     <!-- Navigation Section -->

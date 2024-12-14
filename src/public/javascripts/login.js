@@ -23,7 +23,6 @@ function login() {
     })
     .done(function (data, textStatus, jqXHR) {
         localStorage.setItem("token", data.token);
-        console.log(data); // Log the server response
 
         if (data.role === "Patient") {
             window.location.replace("patientAccount.html");
