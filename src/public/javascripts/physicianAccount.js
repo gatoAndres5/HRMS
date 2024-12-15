@@ -60,7 +60,7 @@ function displayPhysicianPatients(data) {
                     patientsHtml += `
                         <li class="list-group-item">
                             <strong>${patientName}</strong><br>
-                            <p>Error fetching data.</p>
+                            <p>No data available.</p>
                         </li>`;
                 } else {
                     const { weeklyStats } = result;
