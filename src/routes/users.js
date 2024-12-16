@@ -6,7 +6,9 @@ const bcrypt = require("bcryptjs");
 const fs = require('fs');
 const { sendData } = require('./particle-webhook'); // added to update device
 
-
+// On AWS ec2, you can use to store the secret in a separate file. 
+// The file should be stored outside of your code directory. 
+const secret = fs.readFileSync(__dirname + '/../keys/jwtkey').toString();
 // Signup route
 router.post("/signUp", function (req, res) {
 
