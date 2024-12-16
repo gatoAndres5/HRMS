@@ -15,7 +15,7 @@ You can flexibly change this Readme.md file according to your needs.
 Demo:
 ---------
 - Demo URL: \[Provide your project link running on AWS.\]
-- Test Infomation: \[Please provide the test account information and the info about how to update device value.\]
+- Test Infomation: \[Test patient account \]
 
 Videos:
 ---------
