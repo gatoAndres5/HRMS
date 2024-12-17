@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const fs = require('fs');
 const { sendData } = require('./particle-webhook'); // added to update device
 
-
+const secret = fs.readFileSync(__dirname + '/../../../keys/jwtkey').toString();
 // Signup route
 router.post("/signUp", function (req, res) {
 
