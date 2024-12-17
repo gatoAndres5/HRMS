@@ -11,7 +11,7 @@ Final Project - Team 17
 
 Demo:
 ---------
-- Demo URL: [\\[Provide your project link running on AWS.\\]](https://ec2-3-16-163-141.us-east-2.compute.amazonaws.com:8443)
+- Demo URL: https://ec2-3-16-163-141.us-east-2.compute.amazonaws.com:8443
 - Test Information: 
 
 Test Patient Account Information: 
@@ -24,7 +24,7 @@ Test Physician Account Information:
 
 Videos:
 ---------
-- Pitch Video: \[PROVIDE YOUR YOUTUBE VIDEO LINK HERE\]
+- Pitch Video: https://www.youtube.com/embed/T25wGPtgJBY
 - User Experience: https://www.youtube.com/embed/5XalxlUgyXA
 - Code Implements: https://www.youtube.com/embed/9jIQSuuuGYE
 
@@ -34,16 +34,16 @@ How to install and launch your project.
 
 ### Install Dependencies
 
-npm install 
-- This command installs all the necessary dependencies listed in the `package.json` file. It ensures all the required modules are downloaded and ready for use in your project.
-
-### Start the Server
-
 cd src
 - This command changes the directory to the 'src' directory.
 
 nvm install 16
-- This command install node version manager 16 so that the application can properly run.
+- This command install node version manager 16 so that the application can properly run npm commands.
+
+npm install 
+- This command installs all the necessary dependencies listed in the `package.json` file. It ensures all the required modules are downloaded and ready for use in your project.
+
+### Start the Server
 
 npm start
 - This command runs the application. It starts the Express server, allowing you to access your project at  `https://ec2-3-16-163-141.us-east-2.compute.amazonaws.com:8443`. You can view the Heart Rate Monitoring System (HRMS) by visiting this URL.
