@@ -30,7 +30,7 @@ Videos:
 
 ## Get Started
 ---------
-How to install and launch your project.
+How to install and launch the project.
 
 ### Install Dependencies
 
